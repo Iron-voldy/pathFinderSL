@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
+const path = require('path');
 const sequelize = require('./config/database');
 const { logger } = require('./middleware/logger');
 const { errorHandler, notFound } = require('./middleware/errorHandler');
@@ -13,28 +14,19 @@ const hotelRoutes = require('./member3-hotels/routes/hotelRoutes');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// ============================================
-// MIDDLEWARE
-// ============================================
-
-// CORS Configuration
+// Middleware
 app.use(cors({
   origin: process.env.CLIENT_URL || 'http://localhost:3000',
   credentials: true
 }));
 
-// Body Parser
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-
-// Request Logger
+// Serve uploaded images
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use(logger);
 
-// ============================================
-// ROUTES
-// ============================================
-
-// Health Check Route
+// Routes
 app.get('/', (req, res) => {
   res.status(200).json({
     success: true,
@@ -44,44 +36,22 @@ app.get('/', (req, res) => {
   });
 });
 
-// API Routes
 app.use('/api/hotels', hotelRoutes);
 
-// Routes for other modules (to be added later)
-// app.use('/api/auth', authRoutes);
-// app.use('/api/destinations', destinationRoutes);
-// app.use('/api/tours', tourRoutes);
-// app.use('/api/reviews', reviewRoutes);
-// app.use('/api/budget', budgetRoutes);
-
-// ============================================
-// ERROR HANDLING
-// ============================================
-
-// 404 Not Found Handler
+// Error handling
 app.use(notFound);
-
-// Global Error Handler
 app.use(errorHandler);
 
-// ============================================
-// DATABASE CONNECTION & SERVER START
-// ============================================
-
+// Start server
 const startServer = async () => {
   try {
-    // Test database connection
     await sequelize.authenticate();
     console.log('✅ Database connected successfully');
     console.log(`📊 Database: ${process.env.DB_NAME}`);
     console.log(`🖥️  Host: ${process.env.DB_HOST}:${process.env.DB_PORT}`);
 
-    // Sync models with database (be careful in production!)
-    // Use { alter: true } for development, but use migrations in production
     await sequelize.sync({ alter: false });
     console.log('✅ Models synchronized with database');
-
-    // Start server
     app.listen(PORT, () => {
       console.log('\n' + '='.repeat(50));
       console.log('🚀 TravelLanka AI Server is running');
@@ -100,20 +70,15 @@ const startServer = async () => {
   }
 };
 
-// Handle unhandled promise rejections
 process.on('unhandledRejection', (err) => {
   console.error('❌ Unhandled Promise Rejection:', err);
-  // Close server & exit process
   process.exit(1);
 });
 
-// Handle uncaught exceptions
 process.on('uncaughtException', (err) => {
   console.error('❌ Uncaught Exception:', err);
   process.exit(1);
 });
-
-// Start the server
 startServer();
 
 module.exports = app;

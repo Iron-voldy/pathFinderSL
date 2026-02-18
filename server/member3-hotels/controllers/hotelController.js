@@ -1,21 +1,45 @@
 const Hotel = require('../models/Hotel');
 const { Op } = require('sequelize');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
 
-/**
- * Hotel Controller - CRUD Operations
- * Handles all business logic for hotel management
- */
+// Multer setup for hotel image uploads
+const uploadsDir = path.join(__dirname, '../../uploads');
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
 
-/**
- * @desc    Create a new hotel
- * @route   POST /api/hotels
- * @access  Admin
- */
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, uploadsDir);
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+    cb(null, 'hotel-' + uniqueSuffix + path.extname(file.originalname));
+  }
+});
+
+const fileFilter = (req, file, cb) => {
+  const allowedTypes = /jpeg|jpg|png|gif|webp/;
+  const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+  const mimetype = allowedTypes.test(file.mimetype);
+  if (extname && mimetype) {
+    return cb(null, true);
+  }
+  cb(new Error('Only image files (jpg, jpeg, png, gif, webp) are allowed'));
+};
+
+const upload = multer({
+  storage,
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
+  fileFilter
+});
+
+// POST /api/hotels — create a new hotel
 const createHotel = async (req, res) => {
   try {
     const hotelData = req.body;
-    
-    // Create hotel in database
     const hotel = await Hotel.create(hotelData);
     
     res.status(201).json({
@@ -33,11 +57,7 @@ const createHotel = async (req, res) => {
   }
 };
 
-/**
- * @desc    Get all hotels with pagination and filtering
- * @route   GET /api/hotels
- * @access  Public
- */
+// GET /api/hotels — list hotels with pagination and filters
 const getAllHotels = async (req, res) => {
   try {
     const {
@@ -53,35 +73,13 @@ const getAllHotels = async (req, res) => {
       sortOrder = 'DESC'
     } = req.query;
 
-    // Build filter conditions
+    // Build dynamic WHERE clause from query params
     const whereClause = {};
-
-    // Filter by city
-    if (city) {
-      whereClause.city = { [Op.like]: `%${city}%` };
-    }
-
-    // Filter by country
-    if (country) {
-      whereClause.country = { [Op.like]: `%${country}%` };
-    }
-
-    // Filter by star classification
-    if (star_classification) {
-      whereClause.star_classification = star_classification;
-    }
-
-    // Filter by hotel status
-    if (hotel_status) {
-      whereClause.hotel_status = hotel_status;
-    }
-
-    // Filter by hotel classification
-    if (hotel_classification) {
-      whereClause.hotel_classification = hotel_classification;
-    }
-
-    // Search functionality (searches in name, description, address)
+    if (city) whereClause.city = { [Op.like]: `%${city}%` };
+    if (country) whereClause.country = { [Op.like]: `%${country}%` };
+    if (star_classification) whereClause.star_classification = star_classification;
+    if (hotel_status) whereClause.hotel_status = hotel_status;
+    if (hotel_classification) whereClause.hotel_classification = hotel_classification;
     if (search) {
       whereClause[Op.or] = [
         { hotel_name: { [Op.like]: `%${search}%` } },
@@ -91,10 +89,7 @@ const getAllHotels = async (req, res) => {
       ];
     }
 
-    // Calculate pagination
     const offset = (page - 1) * limit;
-
-    // Fetch hotels with pagination
     const { count, rows: hotels } = await Hotel.findAndCountAll({
       where: whereClause,
       limit: parseInt(limit),
@@ -102,8 +97,6 @@ const getAllHotels = async (req, res) => {
       order: [[sortBy, sortOrder]],
       attributes: { exclude: ['deleted_at'] }
     });
-
-    // Calculate pagination metadata
     const totalPages = Math.ceil(count / limit);
 
     res.status(200).json({
@@ -129,11 +122,7 @@ const getAllHotels = async (req, res) => {
   }
 };
 
-/**
- * @desc    Get a single hotel by ID
- * @route   GET /api/hotels/:id
- * @access  Public
- */
+// GET /api/hotels/:id — get single hotel
 const getHotelById = async (req, res) => {
   try {
     const { id } = req.params;
@@ -162,30 +151,23 @@ const getHotelById = async (req, res) => {
   }
 };
 
-/**
- * @desc    Update a hotel
- * @route   PUT /api/hotels/:id
- * @access  Admin
- */
+// PUT /api/hotels/:id — update hotel
 const updateHotel = async (req, res) => {
   try {
     const { id } = req.params;
     const updateData = req.body;
 
-    // Check if hotel exists
     const hotel = await Hotel.findByPk(id);
-
     if (!hotel) {
-      return res.status(404).json({
-        success: false,
-        message: 'Hotel not found'
-      });
+      return res.status(404).json({ success: false, message: 'Hotel not found' });
     }
 
-    // Update hotel
-    await hotel.update(updateData);
+    // Hotel.update() writes ALL keys, bypassing Sequelize dirty-tracking
+    const [rowsAffected] = await Hotel.update(updateData, {
+      where: { id },
+    });
 
-    // Fetch updated hotel
+    console.log(`[Update] Hotel ${id}: ${rowsAffected} row(s) affected`);
     const updatedHotel = await Hotel.findByPk(id);
 
     res.status(200).json({
@@ -203,28 +185,15 @@ const updateHotel = async (req, res) => {
   }
 };
 
-/**
- * @desc    Soft delete a hotel
- * @route   DELETE /api/hotels/:id
- * @access  Admin
- */
+// DELETE /api/hotels/:id — soft delete
 const deleteHotel = async (req, res) => {
   try {
     const { id } = req.params;
-
-    // Check if hotel exists
     const hotel = await Hotel.findByPk(id);
-
     if (!hotel) {
-      return res.status(404).json({
-        success: false,
-        message: 'Hotel not found'
-      });
+      return res.status(404).json({ success: false, message: 'Hotel not found' });
     }
-
-    // Soft delete (sets deleted_at timestamp)
     await hotel.destroy();
-
     res.status(200).json({
       success: true,
       message: 'Hotel deleted successfully',
@@ -240,26 +209,15 @@ const deleteHotel = async (req, res) => {
   }
 };
 
-/**
- * @desc    Permanently delete a hotel (hard delete)
- * @route   DELETE /api/hotels/:id/permanent
- * @access  Super Admin
- */
+// DELETE /api/hotels/:id/permanent — hard delete
 const permanentDeleteHotel = async (req, res) => {
   try {
     const { id } = req.params;
 
-    // Check if hotel exists (including soft-deleted)
     const hotel = await Hotel.findByPk(id, { paranoid: false });
-
     if (!hotel) {
-      return res.status(404).json({
-        success: false,
-        message: 'Hotel not found'
-      });
+      return res.status(404).json({ success: false, message: 'Hotel not found' });
     }
-
-    // Permanent delete (removes from database)
     await hotel.destroy({ force: true });
 
     res.status(200).json({
@@ -277,33 +235,18 @@ const permanentDeleteHotel = async (req, res) => {
   }
 };
 
-/**
- * @desc    Restore a soft-deleted hotel
- * @route   POST /api/hotels/:id/restore
- * @access  Admin
- */
+// POST /api/hotels/:id/restore — restore soft-deleted hotel
 const restoreHotel = async (req, res) => {
   try {
     const { id } = req.params;
 
-    // Find soft-deleted hotel
     const hotel = await Hotel.findByPk(id, { paranoid: false });
-
     if (!hotel) {
-      return res.status(404).json({
-        success: false,
-        message: 'Hotel not found'
-      });
+      return res.status(404).json({ success: false, message: 'Hotel not found' });
     }
-
     if (!hotel.deleted_at) {
-      return res.status(400).json({
-        success: false,
-        message: 'Hotel is not deleted'
-      });
+      return res.status(400).json({ success: false, message: 'Hotel is not deleted' });
     }
-
-    // Restore hotel
     await hotel.restore();
 
     res.status(200).json({
@@ -321,11 +264,7 @@ const restoreHotel = async (req, res) => {
   }
 };
 
-/**
- * @desc    Get hotels by location (city/country)
- * @route   GET /api/hotels/location/:location
- * @access  Public
- */
+// GET /api/hotels/location/:location — filter by city or country
 const getHotelsByLocation = async (req, res) => {
   try {
     const { location } = req.params;
@@ -360,23 +299,15 @@ const getHotelsByLocation = async (req, res) => {
   }
 };
 
-/**
- * @desc    Get hotels statistics
- * @route   GET /api/hotels/stats/summary
- * @access  Admin
- */
+// GET /api/hotels/stats/summary — hotel statistics
 const getHotelStats = async (req, res) => {
   try {
     const totalHotels = await Hotel.count();
     const activeHotels = await Hotel.count({ where: { hotel_status: 'active' } });
     const inactiveHotels = await Hotel.count({ where: { hotel_status: 'inactive' } });
-    
-    // Count by star classification
     const fiveStarCount = await Hotel.count({ where: { star_classification: '5-star', hotel_status: 'active' } });
     const fourStarCount = await Hotel.count({ where: { star_classification: '4-star', hotel_status: 'active' } });
     const threeStarCount = await Hotel.count({ where: { star_classification: '3-star', hotel_status: 'active' } });
-    
-    // Count by classification type
     const hotelCount = await Hotel.count({ where: { hotel_classification: 'Hotel', hotel_status: 'active' } });
     const resortCount = await Hotel.count({ where: { hotel_classification: 'Resort', hotel_status: 'active' } });
     const villaCount = await Hotel.count({ where: { hotel_classification: 'Villa', hotel_status: 'active' } });
@@ -410,6 +341,22 @@ const getHotelStats = async (req, res) => {
   }
 };
 
+// POST /api/hotels/upload-image — multer file upload
+const uploadHotelImage = (req, res) => {
+  upload.single('hotel_image')(req, res, (err) => {
+    if (err instanceof multer.MulterError) {
+      return res.status(400).json({ success: false, message: `Upload error: ${err.message}` });
+    } else if (err) {
+      return res.status(400).json({ success: false, message: err.message });
+    }
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: 'No file uploaded. Field name must be "hotel_image".' });
+    }
+    const imageUrl = `/uploads/${req.file.filename}`;
+    res.status(200).json({ success: true, message: 'Image uploaded successfully', data: { url: imageUrl } });
+  });
+};
+
 module.exports = {
   createHotel,
   getAllHotels,
@@ -419,5 +366,6 @@ module.exports = {
   permanentDeleteHotel,
   restoreHotel,
   getHotelsByLocation,
-  getHotelStats
+  getHotelStats,
+  uploadHotelImage
 };
