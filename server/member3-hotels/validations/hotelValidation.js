@@ -1,11 +1,6 @@
 const Joi = require('joi');
 
-/**
- * Validation Schemas for Hotel Management
- * Using Joi for request validation
- */
-
-// Create Hotel Validation
+// Create hotel schema
 const createHotelSchema = Joi.object({
   hotel_name: Joi.string()
     .min(3)
@@ -143,7 +138,7 @@ const createHotelSchema = Joi.object({
     .allow('', null)
 });
 
-// Update Hotel Validation (all fields optional)
+// Update hotel schema (all fields optional)
 const updateHotelSchema = Joi.object({
   hotel_name: Joi.string()
     .min(3)
@@ -157,16 +152,17 @@ const updateHotelSchema = Joi.object({
     .max(5000),
   
   star_classification: Joi.string()
-    .valid('1-star', '2-star', '3-star', '4-star', '5-star', 'Unrated')
-    .allow(null),
+    .valid('1-star', '2-star', '3-star', '4-star', '5-star', 'Unrated',
+           '1', '2', '3', '4', '5')   // accept legacy numeric values from old DB records
+    .allow(null, ''),
   
-  auto_confirmation: Joi.number()
-    .integer()
-    .valid(0, 1),
+  auto_confirmation: Joi.alternatives()
+    .try(Joi.number().integer().valid(0, 1), Joi.string().allow('', null))
+    .optional(),
   
   hotel_classification: Joi.string()
     .valid('Hotel', 'Resort', 'Villa', 'Guesthouse', 'Apartment', 'Hostel', 'Boutique', 'Other')
-    .allow(null),
+    .allow(null, ''),
   
   longitude: Joi.string()
     .pattern(/^-?([0-9]{1,3}\.?[0-9]*)$/)
@@ -203,20 +199,21 @@ const updateHotelSchema = Joi.object({
     .allow('', null),
   
   hotel_status: Joi.string()
-    .valid('active', 'inactive', 'pending', 'maintenance'),
+    .valid('active', 'inactive', 'pending', 'maintenance',
+           '0', '1', '2', '3')   // accept legacy numeric values from old DB records
+    .allow(null, ''),
   
   start_date: Joi.date()
     .iso()
-    .allow(null),
+    .allow(null, ''),
   
   end_date: Joi.date()
     .iso()
-    .allow(null),
+    .allow(null, ''),
   
-  vendor_id: Joi.number()
-    .integer()
-    .positive()
-    .allow(null),
+  vendor_id: Joi.alternatives()
+    .try(Joi.number().integer().positive(), Joi.string().allow('', null))
+    .optional(),
   
   markup: Joi.number()
     .min(0)
@@ -234,7 +231,7 @@ const updateHotelSchema = Joi.object({
   'object.min': 'At least one field must be provided for update'
 });
 
-// Query Parameters Validation (for filtering/search)
+// Query params schema
 const queryParamsSchema = Joi.object({
   page: Joi.number()
     .integer()
@@ -279,7 +276,7 @@ const queryParamsSchema = Joi.object({
     .default('DESC')
 });
 
-// ID Parameter Validation
+// ID param schema
 const idParamSchema = Joi.object({
   id: Joi.number()
     .integer()
