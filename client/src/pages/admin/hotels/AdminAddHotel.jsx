@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { hotelsAPI } from '../../../services/api';
+import { hotelsAPI, SERVER_BASE_URL } from '../../../services/api';
 import Navbar from '../../../components/shared/Navbar';
 import Footer from '../../../components/shared/Footer';
 import './AdminHotelForm.css';
@@ -8,6 +8,10 @@ import './AdminHotelForm.css';
 const AdminAddHotel = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [imageMode, setImageMode] = useState('url');
+  const [uploadedFile, setUploadedFile] = useState(null);
+  const [uploadPreview, setUploadPreview] = useState(null);
+  const [uploadingImage, setUploadingImage] = useState(false);
   const [formData, setFormData] = useState({
     hotel_name: '',
     hotel_description: '',
@@ -32,10 +36,34 @@ const AdminAddHotel = () => {
     setFormData({ ...formData, [name]: value });
   };
 
+  // Auto-upload when file is selected
+  const handleFileSelect = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setUploadedFile(file);
+    setUploadPreview(URL.createObjectURL(file));
+    setUploadingImage(true);
+    try {
+      const response = await hotelsAPI.uploadImage(file);
+      const fullUrl = SERVER_BASE_URL + response.data.url;
+      setFormData((prev) => ({ ...prev, hotel_image: fullUrl }));
+    } catch (error) {
+      console.error('Image upload failed:', error.response?.data);
+      alert(error.response?.data?.message || 'Failed to upload image. Please try again.');
+      setUploadedFile(null);
+      setUploadPreview(null);
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!formData.hotel_image) {
+      alert('Please provide a hotel image (URL or upload a file).');
+      return;
+    }
     setLoading(true);
-
     try {
       await hotelsAPI.create(formData);
       alert('Hotel created successfully!');
@@ -47,6 +75,8 @@ const AdminAddHotel = () => {
       setLoading(false);
     }
   };
+
+  const currentImagePreview = imageMode === 'upload' ? uploadPreview : formData.hotel_image;
 
   return (
     <div className="admin-page">
@@ -70,7 +100,7 @@ const AdminAddHotel = () => {
                 type="text"
                 id="hotel_name"
                 name="hotel_name"
-                value={formData.hotel_name}
+                value={formData.hotel_name || ''}
                 onChange={handleChange}
                 required
                 placeholder="Enter hotel name"
@@ -83,7 +113,7 @@ const AdminAddHotel = () => {
                 type="text"
                 id="sub_description"
                 name="sub_description"
-                value={formData.sub_description}
+                value={formData.sub_description || ''}
                 onChange={handleChange}
                 placeholder="Short tagline or subtitle"
                 maxLength="500"
@@ -95,7 +125,7 @@ const AdminAddHotel = () => {
               <textarea
                 id="hotel_description"
                 name="hotel_description"
-                value={formData.hotel_description}
+                value={formData.hotel_description || ''}
                 onChange={handleChange}
                 rows="5"
                 placeholder="Detailed description of the hotel"
@@ -108,7 +138,7 @@ const AdminAddHotel = () => {
                 <select
                   id="star_classification"
                   name="star_classification"
-                  value={formData.star_classification}
+                  value={formData.star_classification || '3-star'}
                   onChange={handleChange}
                   required
                 >
@@ -126,7 +156,7 @@ const AdminAddHotel = () => {
                 <select
                   id="hotel_classification"
                   name="hotel_classification"
-                  value={formData.hotel_classification}
+                  value={formData.hotel_classification || 'Hotel'}
                   onChange={handleChange}
                   required
                 >
@@ -146,7 +176,7 @@ const AdminAddHotel = () => {
                 <select
                   id="hotel_status"
                   name="hotel_status"
-                  value={formData.hotel_status}
+                  value={formData.hotel_status || 'active'}
                   onChange={handleChange}
                   required
                 >
@@ -167,7 +197,7 @@ const AdminAddHotel = () => {
               <textarea
                 id="hotel_address"
                 name="hotel_address"
-                value={formData.hotel_address}
+                value={formData.hotel_address || ''}
                 onChange={handleChange}
                 required
                 rows="3"
@@ -182,7 +212,7 @@ const AdminAddHotel = () => {
                   type="text"
                   id="city"
                   name="city"
-                  value={formData.city}
+                  value={formData.city || ''}
                   onChange={handleChange}
                   placeholder="City name"
                 />
@@ -194,7 +224,7 @@ const AdminAddHotel = () => {
                   type="text"
                   id="micro_location"
                   name="micro_location"
-                  value={formData.micro_location}
+                  value={formData.micro_location || ''}
                   onChange={handleChange}
                   placeholder="Specific area or neighborhood"
                 />
@@ -206,7 +236,7 @@ const AdminAddHotel = () => {
                   type="text"
                   id="country"
                   name="country"
-                  value={formData.country}
+                  value={formData.country || ''}
                   onChange={handleChange}
                   placeholder="Country"
                 />
@@ -220,7 +250,7 @@ const AdminAddHotel = () => {
                   type="text"
                   id="latitude"
                   name="latitude"
-                  value={formData.latitude}
+                  value={formData.latitude || ''}
                   onChange={handleChange}
                   placeholder="e.g., 6.9271"
                 />
@@ -232,7 +262,7 @@ const AdminAddHotel = () => {
                   type="text"
                   id="longitude"
                   name="longitude"
-                  value={formData.longitude}
+                  value={formData.longitude || ''}
                   onChange={handleChange}
                   placeholder="e.g., 79.8612"
                 />
@@ -241,22 +271,72 @@ const AdminAddHotel = () => {
           </div>
 
           <div className="form-section">
-            <h2>Media & Links</h2>
+            <h2>Media &amp; Links</h2>
             
+            {/* Image Mode Toggle */}
             <div className="form-group">
-              <label htmlFor="hotel_image">Image URL *</label>
-              <input
-                type="url"
-                id="hotel_image"
-                name="hotel_image"
-                value={formData.hotel_image}
-                onChange={handleChange}
-                required
-                placeholder="https://example.com/image.jpg"
-              />
-              {formData.hotel_image && (
+              <label>Hotel Image *</label>
+              <div className="image-mode-tabs">
+                <button
+                  type="button"
+                  className={`image-tab ${imageMode === 'url' ? 'active' : ''}`}
+                  onClick={() => setImageMode('url')}
+                >
+                  🔗 Image URL
+                </button>
+                <button
+                  type="button"
+                  className={`image-tab ${imageMode === 'upload' ? 'active' : ''}`}
+                  onClick={() => setImageMode('upload')}
+                >
+                  📁 Upload File
+                </button>
+              </div>
+
+              {imageMode === 'url' ? (
+                <div className="image-url-input">
+                  <input
+                    type="text"
+                    id="hotel_image"
+                    name="hotel_image"
+                    value={formData.hotel_image || ''}
+                    onChange={handleChange}
+                    placeholder="https://example.com/image.jpg"
+                  />
+                </div>
+              ) : (
+                <div className="image-upload-input">
+                  <input
+                    type="file"
+                    id="hotel_image_file"
+                    accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
+                    onChange={handleFileSelect}
+                    className="file-input"
+                    disabled={uploadingImage}
+                  />
+                  {uploadingImage && (
+                    <p style={{ fontSize: '0.82rem', color: '#e67e22', margin: '0.4rem 0' }}>⏳ Uploading image...</p>
+                  )}
+                  {uploadedFile && !uploadingImage && (
+                    <p style={{ fontSize: '0.8rem', color: '#555', margin: '0.35rem 0 0.25rem', wordBreak: 'break-all' }}>
+                      📎 {uploadedFile.name}
+                    </p>
+                  )}
+                  {formData.hotel_image && imageMode === 'upload' && !uploadingImage && (
+                    <span className="upload-success">✓ Image uploaded successfully</span>
+                  )}
+                </div>
+              )}
+
+              {currentImagePreview && (
                 <div className="image-preview">
-                  <img src={formData.hotel_image} alt="Preview" onError={(e) => e.target.style.display = 'none'} />
+                  <img
+                    src={currentImagePreview}
+                    alt="Preview"
+                    onError={(e) => {
+                      e.target.src = '/no_img.jpg';
+                    }}
+                  />
                 </div>
               )}
             </div>
@@ -264,10 +344,10 @@ const AdminAddHotel = () => {
             <div className="form-group">
               <label htmlFor="trip_advisor_link">TripAdvisor Link</label>
               <input
-                type="url"
+                type="text"
                 id="trip_advisor_link"
                 name="trip_advisor_link"
-                value={formData.trip_advisor_link}
+                value={formData.trip_advisor_link || ''}
                 onChange={handleChange}
                 placeholder="https://www.tripadvisor.com/..."
               />
@@ -280,7 +360,7 @@ const AdminAddHotel = () => {
                   type="text"
                   id="provider"
                   name="provider"
-                  value={formData.provider}
+                  value={formData.provider || ''}
                   onChange={handleChange}
                   placeholder="Service provider"
                 />
@@ -292,7 +372,7 @@ const AdminAddHotel = () => {
                   type="number"
                   id="markup"
                   name="markup"
-                  value={formData.markup}
+                  value={formData.markup ?? 15}
                   onChange={handleChange}
                   min="0"
                   max="100"

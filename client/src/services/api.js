@@ -1,8 +1,9 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:5001/api';
+export const API_BASE_URL = 'http://localhost:5001/api';
+export const SERVER_BASE_URL = 'http://localhost:5001';
 
-// Create axios instance with default config
+// Axios instance
 const api = axios.create({
   baseURL: API_BASE_URL,
   headers: {
@@ -10,45 +11,54 @@ const api = axios.create({
   },
 });
 
-// Hotels API
 export const hotelsAPI = {
-  // Get all hotels with filters
+  // get all hotels with filters
   getAll: async (params = {}) => {
     const response = await api.get('/hotels', { params });
     return response.data;
   },
 
-  // Get hotel by ID
+  // get by id
   getById: async (id) => {
     const response = await api.get(`/hotels/${id}`);
     return response.data;
   },
 
-  // Create new hotel
+  // create
   create: async (hotelData) => {
     const response = await api.post('/hotels', hotelData);
     return response.data;
   },
 
-  // Update hotel
+  // update
   update: async (id, hotelData) => {
     const response = await api.put(`/hotels/${id}`, hotelData);
     return response.data;
   },
 
-  // Soft delete hotel
+  // soft delete
   delete: async (id) => {
     const response = await api.delete(`/hotels/${id}`);
     return response.data;
   },
 
-  // Restore deleted hotel
+  // restore
   restore: async (id) => {
     const response = await api.post(`/hotels/${id}/restore`);
     return response.data;
   },
 
-  // Get hotels by location
+  // Upload hotel image — Content-Type: undefined lets axios set multipart boundary
+  uploadImage: async (file) => {
+    const formData = new FormData();
+    formData.append('hotel_image', file);
+    const response = await api.post('/hotels/upload-image', formData, {
+      headers: { 'Content-Type': undefined },
+    });
+    return response.data;
+  },
+
+  // get by location
   getByLocation: async (location, limit = 20) => {
     const response = await api.get(`/hotels/location/${location}`, {
       params: { limit },
@@ -56,7 +66,7 @@ export const hotelsAPI = {
     return response.data;
   },
 
-  // Get hotel statistics
+  // stats
   getStats: async () => {
     const response = await api.get('/hotels/stats/summary');
     return response.data;
