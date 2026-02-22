@@ -1,13 +1,28 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faPenToSquare, faTrash, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { hotelsAPI } from '../../../services/api';
 import './AdminHotels.css';
 
+// Normalize legacy numeric DB values
+const normalizeStatus = (val) => {
+  const map = { '0': 'inactive', '1': 'active', '2': 'pending', '3': 'maintenance' };
+  if (val == null) return 'N/A';
+  return map[String(val)] || String(val);
+};
+
+const normalizeStar = (val) => {
+  const map = { '1': '1-star', '2': '2-star', '3': '3-star', '4': '4-star', '5': '5-star' };
+  if (val == null) return 'N/A';
+  return map[String(val)] || String(val);
+};
+
 const AdminHotels = () => {
+  const location = useLocation();
   const [hotels, setHotels] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [successMsg, setSuccessMsg] = useState('');
   const [filters, setFilters] = useState({
     search: '',
     hotel_status: '',
@@ -15,6 +30,15 @@ const AdminHotels = () => {
     limit: 20,
   });
   const [pagination, setPagination] = useState(null);
+
+  // Show success banner from route state
+  useEffect(() => {
+    if (location.state?.successMessage) {
+      setSuccessMsg(location.state.successMessage);
+      const t = setTimeout(() => setSuccessMsg(''), 4000);
+      return () => clearTimeout(t);
+    }
+  }, [location.state]);
 
   useEffect(() => {
     fetchHotels();
@@ -51,6 +75,14 @@ const AdminHotels = () => {
 
   return (
     <div className="admin-hotels-page">
+
+      {/* Success banner */}
+      {successMsg && (
+        <div className="ah-success-banner">
+          ✓ {successMsg}
+        </div>
+      )}
+
       <div className="admin-header">
         <div>
           <h1>Hotel Management</h1>
@@ -116,7 +148,7 @@ const AdminHotels = () => {
                   <th>Image</th>
                   <th>Hotel Name</th>
                   <th>City</th>
-                  <th>Type</th>
+                  <th>Country</th>
                   <th>Rating</th>
                   <th>Status</th>
                   <th>Actions</th>
@@ -128,11 +160,11 @@ const AdminHotels = () => {
                     <td>{hotel.id}</td>
                     <td>
                       <img
-                        src={hotel.hotel_image || '/placeholder-hotel.jpg'}
+                        src={hotel.hotel_image || '/no_img.jpg'}
                         alt={hotel.hotel_name}
                         className="table-image"
                         onError={(e) => {
-                          e.target.src = '/placeholder-hotel.jpg';
+                          e.target.src = '/no_img.jpg';
                         }}
                       />
                     </td>
@@ -143,11 +175,11 @@ const AdminHotels = () => {
                       )}
                     </td>
                     <td>{hotel.city || 'N/A'}</td>
-                    <td>{hotel.hotel_classification || 'N/A'}</td>
-                    <td>{hotel.star_classification || 'N/A'}</td>
+                    <td>{hotel.country || 'N/A'}</td>
+                    <td>{normalizeStar(hotel.star_classification)}</td>
                     <td>
-                      <span className={`status-badge status-${hotel.hotel_status}`}>
-                        {hotel.hotel_status || 'N/A'}
+                      <span className={`status-badge status-${normalizeStatus(hotel.hotel_status)}`}>
+                        {normalizeStatus(hotel.hotel_status)}
                       </span>
                     </td>
                     <td className="actions-cell">

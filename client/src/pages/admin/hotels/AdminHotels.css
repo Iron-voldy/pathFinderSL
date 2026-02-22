@@ -4,6 +4,26 @@
   margin: 0 auto;
 }
 
+/* Success banner shown after edit/add navigation */
+.ah-success-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #d1fae5;
+  color: #065f46;
+  border: 1px solid #6ee7b7;
+  border-radius: 8px;
+  padding: 0.85rem 1.25rem;
+  margin-bottom: 1.25rem;
+  font-weight: 500;
+  animation: ah-fadein 0.3s ease;
+}
+
+@keyframes ah-fadein {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
 .admin-header {
   display: flex;
   justify-content: space-between;
