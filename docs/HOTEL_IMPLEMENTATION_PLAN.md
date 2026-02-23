@@ -71,57 +71,50 @@ This module handles the **Hotels & Accommodation** feature of the TravelLanka AI
 
 ## 3. Database Schema
 
-### Table: `hotels`
+### Table: `hotels` — **ACTUAL SCHEMA (verified from `production_test4_new`)**
 
-> **Note:** A hotel table with data already exists in `production_test4_new`. Verify the existing schema and adapt the model accordingly. Below is the expected/recommended schema:
-
-```sql
-CREATE TABLE hotels (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  name VARCHAR(255) NOT NULL,
-  description TEXT,
-  address VARCHAR(500),
-  city VARCHAR(100),
-  district VARCHAR(100),
-  province VARCHAR(100),
-  latitude DECIMAL(10, 8),
-  longitude DECIMAL(11, 8),
-  star_rating INT DEFAULT 0,
-  price_per_night DECIMAL(10, 2),
-  contact_number VARCHAR(20),
-  email VARCHAR(255),
-  website VARCHAR(255),
-  image_url VARCHAR(500),
-  amenities JSON,
-  room_types JSON,
-  total_rooms INT DEFAULT 0,
-  is_active BOOLEAN DEFAULT TRUE,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-);
-```
-
-### Table: `accommodations` (if separate)
+> **Status:** ✅ Connected and verified. Database contains **2,277 hotel records**.
 
 ```sql
-CREATE TABLE accommodations (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  hotel_id INT NOT NULL,
-  room_type VARCHAR(100),
-  description TEXT,
-  max_guests INT DEFAULT 2,
-  price_per_night DECIMAL(10, 2),
-  available_rooms INT DEFAULT 0,
-  amenities JSON,
-  image_url VARCHAR(500),
-  is_available BOOLEAN DEFAULT TRUE,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  FOREIGN KEY (hotel_id) REFERENCES hotels(id) ON DELETE CASCADE
-);
+-- ACTUAL TABLE: hotels (production_test4_new)
+-- Field                 | Type            | Null | Key | Default
+id                        INT              NOT NULL  PRI
+hotel_name                TEXT             YES       MUL
+hotel_description         TEXT             YES
+star_classification       VARCHAR(45)      YES
+auto_confirmation         TINYINT          YES             0
+triggers                  INT              YES             0
+hotel_classification      VARCHAR(45)      YES
+longitude                 VARCHAR(45)      YES
+latitude                  VARCHAR(45)      YES       MUL
+provider                  VARCHAR(45)      YES
+hotel_address             TEXT             NOT NULL
+trip_advisor_link         TEXT             YES
+hotel_image               TEXT             NOT NULL
+country                   VARCHAR(45)      YES       MUL
+city                      VARCHAR(45)      YES
+micro_location            VARCHAR(45)      YES
+hotel_status              VARCHAR(45)      YES
+start_date                DATE             YES
+end_date                  DATE             YES
+vendor_id                 BIGINT           YES
+updated_by                BIGINT           YES
+created_at                TIMESTAMP        YES
+updated_at                TIMESTAMP        YES
+additional_data_1         VARCHAR(45)      YES
+markup                    DECIMAL(10,0)    YES             15
+sub_description           TEXT             YES
+deleted_at                TIMESTAMP        YES       -- Soft deletes!
+temp_column               VARCHAR(50)      YES
 ```
 
-> ⚠️ **IMPORTANT:** Before creating any new tables, first connect to the database and inspect the existing hotel table structure. Adapt models to match whatever already exists.
+> 🔑 **Key observations for development:**
+> - Use `hotel_name` not `name`, `hotel_image` not `image_url`, `hotel_address` not `address`
+> - `deleted_at` column enables **soft deletes** (records are hidden, not erased)
+> - `star_classification` is a `VARCHAR` (e.g., "3-star", "5-star") not a number
+> - `markup` is the price markup percentage (default 15%)
+> - `hotel_status` controls visibility (e.g., "active", "inactive")
+> - No separate accommodations table found — all data is in `hotels`
 
 ---
 
