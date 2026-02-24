@@ -13,6 +13,7 @@
 /* ===== HERO SECTION ===== */
 .hotels-hero {
   position: relative;
+  z-index: 1;
   height: 60vh;
   min-height: 420px;
   max-height: 700px;
@@ -244,6 +245,8 @@
 
 /* ===== MAIN CONTENT AREA ===== */
 .hotels-main-content {
+  position: relative;
+  z-index: 2;
   padding: 2rem 0 4rem;
 }
 

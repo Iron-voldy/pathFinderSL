@@ -14,52 +14,56 @@ const Home = () => {
   const featuresRef = useRef(null);
 
   useEffect(() => {
-    // Hero animation
-    gsap.from('.hero-content h1', {
-      opacity: 0,
-      y: 50,
-      duration: 1,
-      delay: 0.5,
+    const ctx = gsap.context(() => {
+      // Hero animation
+      gsap.fromTo('.hero-content h1',
+        { opacity: 0, y: 50 },
+        { opacity: 1, y: 0, duration: 1, delay: 0.5 }
+      );
+
+      gsap.fromTo('.hero-content p',
+        { opacity: 0, y: 30 },
+        { opacity: 1, y: 0, duration: 1, delay: 0.8 }
+      );
+
+      gsap.fromTo('.hero-cta',
+        { opacity: 0, y: 30 },
+        { opacity: 1, y: 0, duration: 1, delay: 1.1 }
+      );
+
+      // Features animation
+      gsap.fromTo('.feature-card',
+        { opacity: 0, y: 50 },
+        {
+          scrollTrigger: {
+            trigger: '.features-section',
+            start: 'top 80%',
+          },
+          opacity: 1,
+          y: 0,
+          duration: 0.8,
+          stagger: 0.2,
+          ease: 'power3.out',
+        }
+      );
+
+      // Stats animation
+      gsap.fromTo('.stat-item',
+        { opacity: 0, scale: 0.8 },
+        {
+          scrollTrigger: {
+            trigger: '.stats-section',
+            start: 'top 80%',
+          },
+          opacity: 1,
+          scale: 1,
+          stagger: 0.15,
+          duration: 0.6,
+        }
+      );
     });
 
-    gsap.from('.hero-content p', {
-      opacity: 0,
-      y: 30,
-      duration: 1,
-      delay: 0.8,
-    });
-
-    gsap.from('.hero-cta', {
-      opacity: 0,
-      y: 30,
-      duration: 1,
-      delay: 1.1,
-    });
-
-    // Features animation
-    gsap.from('.feature-card', {
-      scrollTrigger: {
-        trigger: '.features-section',
-        start: 'top 80%',
-      },
-      opacity: 0,
-      y: 50,
-      duration: 0.8,
-      stagger: 0.2,
-      ease: 'power3.out',
-    });
-
-    // Stats animation
-    gsap.from('.stat-item', {
-      scrollTrigger: {
-        trigger: '.stats-section',
-        start: 'top 80%',
-      },
-      opacity: 0,
-      scale: 0.8,
-      stagger: 0.15,
-      duration: 0.6,
-    });
+    return () => ctx.revert();
   }, []);
 
   return (
@@ -108,28 +112,36 @@ const Home = () => {
           
           <div className="features-grid">
             <div className="feature-card">
-              <div className="feature-icon">🏨</div>
+              <div className="feature-icon">
+                <img src="/hotel.gif" alt="Premium Hotels" />
+              </div>
               <h3>Premium Hotels</h3>
               <p>Handpicked accommodations from luxury resorts to cozy guesthouses</p>
               <Link to="/hotels" className="feature-link">Explore Hotels →</Link>
             </div>
 
             <div className="feature-card">
-              <div className="feature-icon">🗺️</div>
+              <div className="feature-icon">
+                <img src="/way.gif" alt="Expert Guidance" />
+              </div>
               <h3>Expert Guidance</h3>
               <p>Curated tours and destinations by local travel experts</p>
               <Link to="/tours" className="feature-link">View Tours →</Link>
             </div>
 
             <div className="feature-card">
-              <div className="feature-icon">⭐</div>
+              <div className="feature-icon">
+                <img src="/best-price.gif" alt="Best Prices" />
+              </div>
               <h3>Best Prices</h3>
               <p>Competitive rates with no hidden fees</p>
               <Link to="/hotels" className="feature-link">See Deals →</Link>
             </div>
 
             <div className="feature-card">
-              <div className="feature-icon">🌴</div>
+              <div className="feature-icon">
+                <img src="/sri-lanka.png" alt="Local Experience" />
+              </div>
               <h3>Local Experience</h3>
               <p>Authentic Sri Lankan hospitality and culture</p>
               <Link to="/destinations" className="feature-link">Discover →</Link>

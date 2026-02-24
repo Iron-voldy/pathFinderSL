@@ -18,20 +18,17 @@ const HotelDetail = () => {
 
   useEffect(() => {
     if (hotel && detailRef.current) {
-      gsap.from('.detail-header', {
-        opacity: 0,
-        y: 30,
-        duration: 0.8,
-        ease: 'power3.out',
-      });
-      gsap.from('.detail-section', {
-        opacity: 0,
-        y: 30,
-        duration: 0.6,
-        stagger: 0.2,
-        ease: 'power2.out',
-        delay: 0.3,
-      });
+      const ctx = gsap.context(() => {
+        gsap.fromTo('.detail-header',
+          { opacity: 0, y: 30 },
+          { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' }
+        );
+        gsap.fromTo('.detail-section',
+          { opacity: 0, y: 30 },
+          { opacity: 1, y: 0, duration: 0.6, stagger: 0.2, ease: 'power2.out', delay: 0.3 }
+        );
+      }, detailRef);
+      return () => ctx.revert();
     }
   }, [hotel]);
 
@@ -84,10 +81,10 @@ const HotelDetail = () => {
       {/* Hero Image */}
       <div className="detail-hero">
         <img
-          src={hotel.hotel_image || '/placeholder-hotel.jpg'}
+          src={hotel.hotel_image || '/no_img.jpg'}
           alt={hotel.hotel_name}
           onError={(e) => {
-            e.target.src = '/placeholder-hotel.jpg';
+            e.target.src = '/no_img.jpg';
           }}
         />
         <div className="hero-overlay"></div>

@@ -395,11 +395,11 @@ const Hotels = () => {
                         >
                           <div className="hotel-card-image">
                             <img
-                              src={hotel.hotel_image || '/placeholder-hotel.jpg'}
+                              src={hotel.hotel_image || '/no_img.jpg'}
                               alt={hotel.hotel_name}
                               loading="lazy"
                               onError={(e) => {
-                                e.target.src = 'https://www.atlantawatershed.org/wp-content/uploads/2017/06/default-placeholder.png';
+                                e.target.src = '/no_img.jpg';
                               }}
                             />
                             {hotel.star_classification && (
