@@ -1,0 +1,513 @@
+/* ===================================================
+   ChatBot Component - MakeMyTrip-Inspired Floating Bot
+   PathFinderSL AI Travel Assistant
+   =================================================== */
+
+/* ===== WRAPPER ===== */
+.chatbot-wrapper {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12px;
+}
+
+/* ===== FLOATING BOT CHARACTER ===== */
+.chatbot-floating-bot {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  animation: botIdleFloat 3s ease-in-out infinite;
+  z-index: 10;
+  filter: drop-shadow(0 10px 30px rgba(0, 78, 100, 0.35)) drop-shadow(0 4px 12px rgba(0, 0, 0, 0.2));
+}
+
+.chatbot-floating-bot:focus {
+  outline: none;
+}
+
+/* Bot Image - Large and Prominent */
+.floating-bot-image {
+  width: 90px;
+  height: 90px;
+  object-fit: contain;
+  filter: drop-shadow(0 8px 20px rgba(0, 78, 100, 0.4));
+  transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), 
+              filter 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: botWiggle 4s ease-in-out infinite;
+}
+
+/* Glow Effect Behind Bot */
+.floating-bot-glow {
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0, 165, 207, 0.4) 0%, rgba(0, 78, 100, 0.2) 50%, transparent 70%);
+  animation: glowPulse 2.5s ease-in-out infinite;
+  transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), 
+              opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: -1;
+}
+
+/* Idle floating animation */
+@keyframes botIdleFloat {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+/* Wiggle animation for attention */
+@keyframes botWiggle {
+  0%, 100% {
+    transform: rotate(0deg) scale(1);
+  }
+  10% {
+    transform: rotate(-3deg) scale(1.02);
+  }
+  20% {
+    transform: rotate(3deg) scale(1);
+  }
+  30% {
+    transform: rotate(-2deg) scale(1.01);
+  }
+  40% {
+    transform: rotate(2deg) scale(1);
+  }
+  50%, 100% {
+    transform: rotate(0deg) scale(1);
+  }
+}
+
+/* Glow pulse animation */
+@keyframes glowPulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.9;
+  }
+}
+
+/* Hover state */
+.chatbot-floating-bot:hover {
+  animation: none;
+  will-change: transform;
+}
+
+.chatbot-floating-bot:hover .floating-bot-image {
+  transform: scale(1.15) rotate(5deg);
+  animation: none;
+  filter: drop-shadow(0 12px 30px rgba(0, 78, 100, 0.5));
+  will-change: transform, filter;
+}
+
+.chatbot-floating-bot:hover .floating-bot-glow {
+  animation: none;
+  transform: scale(1.4);
+  opacity: 1;
+  will-change: transform, opacity;
+}
+
+/* Open state - smaller bot moves to panel */
+.chatbot-floating-bot.open {
+  animation: none;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(-50px) scale(0.5);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ===== TOOLTIP ===== */
+.chatbot-tooltip {
+  position: absolute;
+  bottom: 110px;
+  right: 0;
+  background: white;
+  border-radius: 16px;
+  padding: 14px 18px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.04);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  white-space: nowrap;
+  animation: tooltipSlideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  max-width: 280px;
+}
+
+.chatbot-tooltip p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #1e293b;
+  font-weight: 500;
+  white-space: normal;
+  line-height: 1.4;
+}
+
+.tooltip-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #94a3b8;
+  padding: 4px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.tooltip-close:hover {
+  background: #f1f5f9;
+  color: #1e293b;
+  transform: scale(1.1);
+}
+
+/* Tooltip arrow */
+.chatbot-tooltip::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  right: 40px;
+  width: 16px;
+  height: 16px;
+  background: white;
+  transform: rotate(45deg);
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.06);
+}
+
+@keyframes tooltipSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===== CHAT PANEL - MakeMyTrip Style ===== */
+.chatbot-panel {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 340px;
+  background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+  background-image: url('/chatbot-panel-bg.webp');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  border-radius: 28px;
+  box-shadow:
+    0 25px 70px rgba(0, 0, 0, 0.35),
+    0 15px 40px rgba(0, 0, 0, 0.25),
+    0 8px 20px rgba(0, 0, 0, 0.2),
+    0 0 0 1px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  overflow: visible;
+  animation: panelSlideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 60px 20px 20px 20px;
+}
+
+@keyframes panelSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Close button */
+.chatbot-panel-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: #f1f5f9;
+  color: #64748b;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  z-index: 10;
+}
+
+.chatbot-panel-close:hover {
+  background: #e2e8f0;
+  color: #1e293b;
+  transform: rotate(90deg) scale(1.1);
+}
+
+/* Bot Character on side of panel */
+.chatbot-panel-bot {
+  position: absolute;
+  top: -40px;
+  left: 25px;
+  z-index: 20;
+}
+
+.panel-bot-image {
+  width: 110px;
+  height: 110px;
+  object-fit: contain;
+  filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.4)) drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3));
+  animation: panelBotBounce 2s ease-in-out infinite;
+}
+
+@keyframes panelBotBounce {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  25% {
+    transform: translateY(-5px) rotate(-3deg);
+  }
+  75% {
+    transform: translateY(-5px) rotate(3deg);
+  }
+}
+
+/* Panel Content */
+.chatbot-panel-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ===== SUGGESTION CARDS ===== */
+.chatbot-suggestion-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.suggestion-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 16px;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  cursor: not-allowed;
+  opacity: 0.75;
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  text-align: left;
+  width: 100%;
+}
+
+.suggestion-card:hover {
+  border-color: #00a5cf;
+  box-shadow: 0 4px 16px rgba(0, 165, 207, 0.15);
+  transform: translateX(4px);
+  opacity: 0.9;
+}
+
+.suggestion-card-icon {
+  font-size: 1.3rem;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  border-radius: 10px;
+}
+
+.suggestion-card-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.suggestion-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #0ea5e9;
+  line-height: 1.3;
+}
+
+.suggestion-subtitle {
+  font-size: 0.82rem;
+  color: #64748b;
+  line-height: 1.3;
+}
+
+/* ===== INPUT BAR ===== */
+.chatbot-panel-input {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border: 2px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 14px 18px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.input-search-icon {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  flex-shrink: 0;
+  opacity: 0.6;
+}
+
+.chatbot-panel-input:hover {
+  border-color: #cbd5e1;
+  transform: scale(1.01);
+}
+
+.chatbot-panel-input input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 0.95rem;
+  color: #1e293b;
+  font-family: inherit;
+}
+
+.chatbot-panel-input input::placeholder {
+  color: #94a3b8;
+}
+
+.chatbot-panel-input input:disabled {
+  cursor: not-allowed;
+}
+
+.input-cursor {
+  color: #00a5cf;
+  font-weight: 300;
+  animation: cursorBlink 1s step-end infinite;
+}
+
+@keyframes cursorBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* ===== COMING SOON BADGE ===== */
+.chatbot-coming-soon-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #92400e;
+}
+
+.badge-icon {
+  font-size: 1rem;
+}
+
+/* ===================================================
+   RESPONSIVE
+   =================================================== */
+@media (max-width: 480px) {
+  .chatbot-wrapper {
+    bottom: 16px;
+    right: 16px;
+  }
+
+  .chatbot-floating-bot {
+    width: 80px;
+    height: 80px;
+  }
+
+  .floating-bot-image {
+    width: 70px;
+    height: 70px;
+  }
+
+  .floating-bot-glow {
+    width: 60px;
+    height: 60px;
+  }
+
+  .chatbot-panel {
+    width: calc(100vw - 32px);
+    right: -8px;
+    border-radius: 20px;
+    padding: 50px 16px 16px 16px;
+  }
+
+  .panel-bot-image {
+    width: 65px;
+    height: 65px;
+  }
+
+  .chatbot-tooltip {
+    right: -8px;
+    max-width: 220px;
+    bottom: 90px;
+  }
+
+  .suggestion-card {
+    padding: 12px 14px;
+  }
+}
+
+@media (max-width: 380px) {
+  .chatbot-panel {
+    width: calc(100vw - 16px);
+    right: -12px;
+  }
+}
+
+@media (min-width: 1440px) {
+  .chatbot-wrapper {
+    bottom: 30px;
+    right: 30px;
+  }
+
+  .chatbot-floating-bot {
+    width: 120px;
+    height: 120px;
+  }
+
+  .floating-bot-image {
+    width: 110px;
+    height: 110px;
+  }
+
+  .floating-bot-glow {
+    width: 100px;
+    height: 100px;
+  }
+
+  .chatbot-panel {
+    width: 380px;
+    padding: 70px 24px 24px 24px;
+  }
+
+  .panel-bot-image {
+    width: 90px;
+    height: 90px;
+  }
+}
