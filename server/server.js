@@ -46,37 +46,37 @@ app.use(errorHandler);
 const startServer = async () => {
   try {
     await sequelize.authenticate();
-    console.log('✅ Database connected successfully');
-    console.log(`📊 Database: ${process.env.DB_NAME}`);
-    console.log(`🖥️  Host: ${process.env.DB_HOST}:${process.env.DB_PORT}`);
+    console.log('\x1b[32m[OK]\x1b[0m  Database connected successfully');
+    console.log('\x1b[36m[DB]\x1b[0m  Database : ' + process.env.DB_NAME);
+    console.log('\x1b[36m[DB]\x1b[0m  Host     : ' + process.env.DB_HOST + ':' + process.env.DB_PORT);
 
     await sequelize.sync({ alter: false });
-    console.log('✅ Models synchronized with database');
+    console.log('\x1b[32m[OK]\x1b[0m  Models synchronized with database');
     app.listen(PORT, () => {
-      console.log('\n' + '='.repeat(50));
-      console.log('🚀 TravelLanka AI Server is running');
-      console.log('='.repeat(50));
-      console.log(`🌐 Server URL: http://localhost:${PORT}`);
-      console.log(`📡 API Base: http://localhost:${PORT}/api`);
-      console.log(`🏨 Hotels API: http://localhost:${PORT}/api/hotels`);
-      console.log(`🕒 Started at: ${new Date().toLocaleString()}`);
-      console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
-      console.log('='.repeat(50) + '\n');
+      console.log('\n\x1b[1m' + '='.repeat(50) + '\x1b[0m');
+      console.log('\x1b[32m\x1b[1m[START]\x1b[0m TravelLanka AI Server is running');
+      console.log('\x1b[1m' + '='.repeat(50) + '\x1b[0m');
+      console.log('\x1b[36m[URL]\x1b[0m   Server  : http://localhost:' + PORT);
+      console.log('\x1b[36m[URL]\x1b[0m   API     : http://localhost:' + PORT + '/api');
+      console.log('\x1b[36m[URL]\x1b[0m   Hotels  : http://localhost:' + PORT + '/api/hotels');
+      console.log('\x1b[33m[TIME]\x1b[0m  Started : ' + new Date().toLocaleString());
+      console.log('\x1b[33m[ENV]\x1b[0m   Mode    : ' + (process.env.NODE_ENV || 'development'));
+      console.log('\x1b[1m' + '='.repeat(50) + '\x1b[0m\n');
     });
 
   } catch (error) {
-    console.error('❌ Unable to start server:', error);
+    console.error('\x1b[31m[ERR]\x1b[0m Unable to start server:', error);
     process.exit(1);
   }
 };
 
 process.on('unhandledRejection', (err) => {
-  console.error('❌ Unhandled Promise Rejection:', err);
+  console.error('\x1b[31m[ERR]\x1b[0m Unhandled Promise Rejection:', err);
   process.exit(1);
 });
 
 process.on('uncaughtException', (err) => {
-  console.error('❌ Uncaught Exception:', err);
+  console.error('\x1b[31m[ERR]\x1b[0m Uncaught Exception:', err);
   process.exit(1);
 });
 startServer();
