@@ -227,19 +227,19 @@ git push origin hotel-management
 **Goal:** Create the Sequelize model that maps to the existing hotel table.
 
 **Tasks:**
-1. Create `server/member3-hotels/models/Hotel.js`:
+1. Create `server/hotel-accommodation-management/models/Hotel.js`:
    - Define the model to match the **existing** database table structure
    - Map all columns with correct data types
    - Set `tableName` explicitly to match the existing table name
    - Set `timestamps: true/false` based on existing table
 
-2. If an accommodations/rooms table exists, create `server/member3-hotels/models/Accommodation.js`
+2. If an accommodations/rooms table exists, create `server/hotel-accommodation-management/models/Accommodation.js`
 
 3. Define associations if applicable:
    - `Hotel.hasMany(Accommodation)`
    - `Accommodation.belongsTo(Hotel)`
 
-4. Create `server/member3-hotels/models/index.js` to export all models.
+4. Create `server/hotel-accommodation-management/models/index.js` to export all models.
 
 **Git Commit:**
 ```bash
@@ -260,7 +260,7 @@ git push origin hotel-management
    npm install joi
    ```
 
-2. Create `server/member3-hotels/validations/hotelValidation.js`:
+2. Create `server/hotel-accommodation-management/validations/hotelValidation.js`:
    - `createHotelSchema` — validate all required fields for creating a hotel
    - `updateHotelSchema` — validate fields for updating (all optional)
    - `hotelIdSchema` — validate hotel ID parameter
@@ -293,7 +293,7 @@ git push origin hotel-management
 **Goal:** Implement all controller functions for hotel management.
 
 **Tasks:**
-1. Create `server/member3-hotels/controllers/hotelController.js` with these functions:
+1. Create `server/hotel-accommodation-management/controllers/hotelController.js` with these functions:
 
    | Function | Description |
    |----------|-------------|
@@ -331,7 +331,7 @@ git push origin hotel-management
 **Goal:** Define Express routes for hotel CRUD operations.
 
 **Tasks:**
-1. Create `server/member3-hotels/routes/hotelRoutes.js`:
+1. Create `server/hotel-accommodation-management/routes/hotelRoutes.js`:
 
    ```javascript
    const express = require('express');
@@ -376,7 +376,7 @@ git push origin hotel-management
    const cors = require('cors');
    const dotenv = require('dotenv');
    const sequelize = require('./config/database');
-   const hotelRoutes = require('./member3-hotels/routes/hotelRoutes');
+   const hotelRoutes = require('./hotel-accommodation-management/routes/hotelRoutes');
 
    dotenv.config();
    const app = express();
@@ -534,7 +534,7 @@ git push origin hotel-management
 **Goal:** Build the form to add a new hotel.
 
 **Tasks:**
-1. Create `client/src/pages/member3-hotels/AddHotelPage.jsx`:
+1. Create `client/src/pages/hotel-accommodation-management/AddHotelPage.jsx`:
    - Form with all hotel fields (name, description, city, price, star rating, etc.)
    - Form validation (required fields, number ranges, etc.)
    - Image URL input (or file upload if Step 17 is done)
@@ -542,7 +542,7 @@ git push origin hotel-management
    - Success/error toast notifications
    - Redirect to hotel list after successful creation
 
-2. Create reusable form component: `client/src/components/member3-hotels/HotelForm.jsx`
+2. Create reusable form component: `client/src/components/hotel-accommodation-management/HotelForm.jsx`
    - Shared between Add and Edit pages
    - Accepts `initialData` and `onSubmit` props
 
@@ -560,7 +560,7 @@ git push origin hotel-management
 **Goal:** Build an admin dashboard to view and manage all hotels.
 
 **Tasks:**
-1. Create `client/src/pages/member3-hotels/AdminHotelListPage.jsx`:
+1. Create `client/src/pages/hotel-accommodation-management/AdminHotelListPage.jsx`:
    - Table/card view of all hotels
    - Display: name, city, star rating, price, status (active/inactive)
    - Action buttons: **View**, **Edit**, **Delete** for each hotel
@@ -568,10 +568,10 @@ git push origin hotel-management
    - Search bar to filter hotels
    - "Add New Hotel" button linking to `/admin/hotels/add`
 
-2. Create component: `client/src/components/member3-hotels/HotelTable.jsx`
+2. Create component: `client/src/components/hotel-accommodation-management/HotelTable.jsx`
    - Reusable table component with sorting
 
-3. Create component: `client/src/components/member3-hotels/HotelCard.jsx`
+3. Create component: `client/src/components/hotel-accommodation-management/HotelCard.jsx`
    - Card view for each hotel (used in both admin and user views)
 
 **Git Commit:**
@@ -588,7 +588,7 @@ git push origin hotel-management
 **Goal:** Build the page to edit existing hotel details.
 
 **Tasks:**
-1. Create `client/src/pages/member3-hotels/EditHotelPage.jsx`:
+1. Create `client/src/pages/hotel-accommodation-management/EditHotelPage.jsx`:
    - Fetch hotel data by ID on page load
    - Pre-populate the `HotelForm` component with existing data
    - Submit handler calls `hotelService.updateHotel()`
@@ -633,14 +633,14 @@ git push origin hotel-management
 **Goal:** Build the public-facing page where users browse all hotels.
 
 **Tasks:**
-1. Create `client/src/pages/member3-hotels/HotelListPage.jsx`:
+1. Create `client/src/pages/hotel-accommodation-management/HotelListPage.jsx`:
    - Grid/card layout displaying all hotels
    - Hotel card shows: image, name, city, star rating, price
    - Click on card navigates to hotel detail page
    - Pagination (load more or page numbers)
    - Responsive design (mobile, tablet, desktop)
 
-2. Create component: `client/src/components/member3-hotels/HotelCardUser.jsx`
+2. Create component: `client/src/components/hotel-accommodation-management/HotelCardUser.jsx`
    - Attractive card design for public users
    - Star rating display
    - Price display
@@ -659,7 +659,7 @@ git push origin hotel-management
 **Goal:** Build the detailed view page for a single hotel.
 
 **Tasks:**
-1. Create `client/src/pages/member3-hotels/HotelDetailPage.jsx`:
+1. Create `client/src/pages/hotel-accommodation-management/HotelDetailPage.jsx`:
    - Large hero image / image gallery
    - Hotel name, star rating, description
    - Location details (city, district, province)
@@ -670,8 +670,8 @@ git push origin hotel-management
    - Contact information (phone, email, website)
    - "Back to Hotels" navigation button
 
-2. Create component: `client/src/components/member3-hotels/AmenitiesList.jsx`
-3. Create component: `client/src/components/member3-hotels/HotelImageGallery.jsx`
+2. Create component: `client/src/components/hotel-accommodation-management/AmenitiesList.jsx`
+3. Create component: `client/src/components/hotel-accommodation-management/HotelImageGallery.jsx`
 
 **Git Commit:**
 ```bash
@@ -687,11 +687,11 @@ git push origin hotel-management
 **Goal:** Allow users to search and filter hotels.
 
 **Tasks:**
-1. Add search bar component: `client/src/components/member3-hotels/HotelSearchBar.jsx`
+1. Add search bar component: `client/src/components/hotel-accommodation-management/HotelSearchBar.jsx`
    - Search by hotel name or city
    - Debounced search input
 
-2. Add filter sidebar/dropdown: `client/src/components/member3-hotels/HotelFilters.jsx`
+2. Add filter sidebar/dropdown: `client/src/components/hotel-accommodation-management/HotelFilters.jsx`
    - Filter by city/district
    - Filter by star rating
    - Filter by price range (min-max)
@@ -810,7 +810,7 @@ server/
 │   ├── errorHandler.js
 │   ├── validate.js
 │   └── upload.js
-├── member3-hotels/
+├── hotel-accommodation-management/
 │   ├── controllers/
 │   │   └── hotelController.js
 │   ├── models/
@@ -831,7 +831,7 @@ client/
 ├── public/
 ├── src/
 │   ├── components/
-│   │   ├── member3-hotels/
+│   │   ├── hotel-accommodation-management/
 │   │   │   ├── HotelForm.jsx
 │   │   │   ├── HotelTable.jsx
 │   │   │   ├── HotelCard.jsx
@@ -846,7 +846,7 @@ client/
 │   │       ├── Layout.jsx
 │   │       └── ConfirmDialog.jsx
 │   ├── pages/
-│   │   └── member3-hotels/
+│   │   └── hotel-accommodation-management/
 │   │       ├── AddHotelPage.jsx
 │   │       ├── AdminHotelListPage.jsx
 │   │       ├── EditHotelPage.jsx
@@ -938,3 +938,4 @@ Create a **Pull Request** from `hotel-management` → `main` for team review.
 - [ ] All Postman tests pass
 - [ ] Code is clean and well-documented
 - [ ] All steps committed and pushed to `hotel-management` branch
+
