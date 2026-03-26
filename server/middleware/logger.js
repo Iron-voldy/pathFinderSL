@@ -1,8 +1,3 @@
-/**
- * Request Logger Middleware
- * Logs incoming requests with timestamp
- */
-
 const logger = (req, res, next) => {
   const timestamp = new Date().toISOString();
   const method = req.method;
@@ -11,12 +6,14 @@ const logger = (req, res, next) => {
 
   console.log(`[${timestamp}] ${method} ${url} - IP: ${ip}`);
 
-  // Log request body for POST/PUT/PATCH (exclude sensitive data)
   if (['POST', 'PUT', 'PATCH'].includes(method)) {
     const sanitizedBody = { ...req.body };
-    // Remove sensitive fields from logs
     delete sanitizedBody.password;
+    delete sanitizedBody.newPassword;
     delete sanitizedBody.token;
+    delete sanitizedBody.resetToken;
+    delete sanitizedBody.otp;
+
     console.log('Request Body:', JSON.stringify(sanitizedBody, null, 2));
   }
 
