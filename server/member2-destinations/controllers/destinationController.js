@@ -1,4 +1,10 @@
-const { createDestination, getAllDestinations, addDestinationImage } = require('../models/Destination');
+const {
+  createDestination,
+  getAllDestinations,
+  addDestinationImage,
+  updateDestination,
+  deleteDestination,
+} = require('../models/Destination');
 
 async function createDestinationHandler(req, res) {
   try {
@@ -39,7 +45,45 @@ async function listDestinationsHandler(_req, res) {
   }
 }
 
+async function updateDestinationHandler(req, res) {
+  try {
+    const { id } = req.params;
+    const { name, district, category, description } = req.body;
+
+    if (!name || !district || !category || !description) {
+      return res.status(400).json({ message: 'Missing required fields' });
+    }
+
+    const ok = await updateDestination(id, { name, district, category, description });
+    if (!ok) {
+      return res.status(404).json({ message: 'Destination not found' });
+    }
+
+    res.json({ id: Number(id), name, district, category, description });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Failed to update destination' });
+  }
+}
+
+async function deleteDestinationHandler(req, res) {
+  try {
+    const { id } = req.params;
+    const ok = await deleteDestination(id);
+    if (!ok) {
+      return res.status(404).json({ message: 'Destination not found' });
+    }
+
+    res.status(204).send();
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Failed to delete destination' });
+  }
+}
+
 module.exports = {
   createDestinationHandler,
   listDestinationsHandler,
+  updateDestinationHandler,
+  deleteDestinationHandler,
 };
