@@ -41,9 +41,11 @@ export const createUser = (payload) => request("/users", { method: "POST", body:
 export const updateUser = (id, payload) => request(`/users/${id}`, { method: "PUT", body: payload });
 export const deleteUser = (id) => request(`/users/${id}`, { method: "DELETE" });
 
-// Destination (Create, Read)
+// Destination (CRUD)
 export const getDestinations = () => request("/destinations");
 export const createDestination = (payload) => request("/destinations", { method: "POST", body: payload });
+export const updateDestination = (id, payload) => request(`/destinations/${id}`, { method: "PUT", body: payload });
+export const deleteDestination = (id) => request(`/destinations/${id}`, { method: "DELETE" });
 
 // Hotel (Create, Read)
 export const getHotels = () => request("/hotels");
