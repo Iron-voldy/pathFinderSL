@@ -34,6 +34,14 @@ async function addDestinationImage(destinationId, imageUrl) {
   return { id: result.insertId, destinationId, imageUrl };
 }
 
+async function updateDestination(id, { name, district, category, description }) {
+  const [result] = await pathfinderPool.execute(
+    'UPDATE DESTINATION SET name = ?, district = ?, category = ?, description = ? WHERE destination_id = ?',
+    [name, district || null, category || null, description || null, id]
+  );
+  return result.affectedRows > 0;
+}
+
 async function deleteDestination(id) {
   const [result] = await pathfinderPool.execute('DELETE FROM DESTINATION WHERE destination_id = ?', [id]);
   return result.affectedRows > 0;
@@ -43,5 +51,6 @@ module.exports = {
   createDestination,
   getAllDestinations,
   addDestinationImage,
+  updateDestination,
   deleteDestination,
 };
