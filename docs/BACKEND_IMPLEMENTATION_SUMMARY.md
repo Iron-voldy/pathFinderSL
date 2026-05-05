@@ -93,7 +93,7 @@ server/
 │   ├── validateRequest.js             # Request validation
 │   ├── errorHandler.js                # Error handling
 │   └── logger.js                      # Request logger
-├── member3-hotels/
+├── hotel-accommodation-management/
 │   ├── models/
 │   │   └── Hotel.js                   # Hotel model (Sequelize)
 │   ├── controllers/
@@ -250,3 +250,4 @@ The backend is **fully operational** and ready for frontend development:
 **Date**: February 24, 2026  
 **Module**: Member 3 - Hotels & Accommodation  
 **Backend Progress**: 100% ✓
+

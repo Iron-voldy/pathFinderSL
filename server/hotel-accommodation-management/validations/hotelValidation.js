@@ -1,5 +1,7 @@
 const Joi = require('joi');
 
+const STAR_QUERY_VALUES = ['1', '2', '3', '4', '5', '1-star', '2-star', '3-star', '4-star', '5-star', 'Unrated'];
+
 /**
  * Validation Schemas for Hotel Management
  * Using Joi for request validation
@@ -254,7 +256,7 @@ const queryParamsSchema = Joi.object({
     .allow(''),
   
   star_classification: Joi.string()
-    .valid('1-star', '2-star', '3-star', '4-star', '5-star', 'Unrated')
+    .valid(...STAR_QUERY_VALUES)
     .allow(''),
   
   hotel_status: Joi.string()

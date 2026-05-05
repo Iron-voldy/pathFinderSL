@@ -7,6 +7,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { hotelsAPI } from '../../../services/api';
 import AdminLayout from '../AdminLayout';
+import { getHotelImageSrc, handleHotelImageError } from '../../../utils/hotelImage';
 import './AdminHotelForm.css';
 
 const getStarCount = (starStr) => {
@@ -60,6 +61,10 @@ const AdminAddHotel = () => {
 
     if (formData.hotel_description && formData.hotel_description.trim().length > 0 && formData.hotel_description.trim().length < 50) {
       e.hotel_description = 'Description must be at least 50 characters (currently ' + formData.hotel_description.trim().length + ')';
+    }
+
+    if (!formData.micro_location.trim()) {
+      e.micro_location = 'City / Area is required — the AI needs this to assign the hotel to the correct city';
     }
 
     if (!formData.hotel_address.trim()) {
@@ -290,8 +295,12 @@ const AdminAddHotel = () => {
                   <input type="text" id="city" name="city" value={formData.city} onChange={handleChange} placeholder="City name" />
                 </div>
                 <div className="form-group">
-                  <label htmlFor="micro_location">Area</label>
-                  <input type="text" id="micro_location" name="micro_location" value={formData.micro_location} onChange={handleChange} placeholder="Specific area or neighborhood" />
+                  <label htmlFor="micro_location">
+                    City / Area <span className="required">*</span>
+                    <span className="field-hint"> (AI uses this to find the hotel — enter the canonical city name e.g. Kandy, Mirissa)</span>
+                  </label>
+                  <input type="text" id="micro_location" name="micro_location" value={formData.micro_location} onChange={handleChange} placeholder="e.g. Kandy, Mirissa, Galle, Ella, Yala..." className={errors.micro_location ? 'input-error' : ''} />
+                  {errors.micro_location && <span className="field-error">{errors.micro_location}</span>}
                 </div>
                 <div className="form-group">
                   <label htmlFor="country">Country</label>
@@ -446,10 +455,10 @@ const AdminAddHotel = () => {
                 <div className="preview-card__img-wrap">
                   {currentImageUrl ? (
                     <img
-                      src={currentImageUrl}
+                      src={getHotelImageSrc(currentImageUrl)}
                       alt="Hotel"
                       className="preview-card__img"
-                      onError={(e) => { e.target.style.display = 'none'; e.target.nextElementSibling.style.display = 'flex'; }}
+                      onError={handleHotelImageError}
                     />
                   ) : null}
                   <div

@@ -1,6 +1,22 @@
 const Hotel = require('../models/Hotel');
 const { Op } = require('sequelize');
 
+const STAR_CLASSIFICATION_PATTERN = /^([1-5])(?:-star)?$/i;
+
+const getStarClassificationVariants = (value) => {
+  if (!value) return [];
+
+  const normalizedValue = String(value).trim();
+  const match = STAR_CLASSIFICATION_PATTERN.exec(normalizedValue);
+
+  if (!match) {
+    return [normalizedValue];
+  }
+
+  const starCount = match[1];
+  return [starCount, `${starCount}-star`];
+};
+
 /**
  * Hotel Controller - CRUD Operations
  * Handles all business logic for hotel management
@@ -68,7 +84,10 @@ const getAllHotels = async (req, res) => {
 
     // Filter by star classification
     if (star_classification) {
-      whereClause.star_classification = star_classification;
+      const starVariants = getStarClassificationVariants(star_classification);
+      whereClause.star_classification = starVariants.length > 1
+        ? { [Op.in]: starVariants }
+        : starVariants[0];
     }
 
     // Filter by hotel status
@@ -372,9 +391,24 @@ const getHotelStats = async (req, res) => {
     const inactiveHotels = await Hotel.count({ where: { hotel_status: 'inactive' } });
     
     // Count by star classification
-    const fiveStarCount = await Hotel.count({ where: { star_classification: '5-star', hotel_status: 'active' } });
-    const fourStarCount = await Hotel.count({ where: { star_classification: '4-star', hotel_status: 'active' } });
-    const threeStarCount = await Hotel.count({ where: { star_classification: '3-star', hotel_status: 'active' } });
+    const fiveStarCount = await Hotel.count({
+      where: {
+        star_classification: { [Op.in]: getStarClassificationVariants('5-star') },
+        hotel_status: 'active'
+      }
+    });
+    const fourStarCount = await Hotel.count({
+      where: {
+        star_classification: { [Op.in]: getStarClassificationVariants('4-star') },
+        hotel_status: 'active'
+      }
+    });
+    const threeStarCount = await Hotel.count({
+      where: {
+        star_classification: { [Op.in]: getStarClassificationVariants('3-star') },
+        hotel_status: 'active'
+      }
+    });
     
     // Count by classification type
     const hotelCount = await Hotel.count({ where: { hotel_classification: 'Hotel', hotel_status: 'active' } });

@@ -1,0 +1,577 @@
+/* ============================================================
+   Destination Detail — Split-layout page
+   Left : sticky blurred image + info panel (40 vw)
+   Right: scrollable activities grid (60 vw)
+   ============================================================ */
+
+:root {
+  --nav-h: 62px;
+  --accent: #e9a93c;
+  --teal: #0c618a;
+}
+
+/* ── Wrapper ─────────────────────────────────────────────── */
+.dest-detail {
+  display: flex;
+  min-height: calc(100vh - var(--nav-h));
+  margin-top: var(--nav-h);
+}
+
+/* ── Left panel ──────────────────────────────────────────── */
+.dest-detail__left {
+  position: sticky;
+  top: var(--nav-h);
+  width: 38%;
+  flex-shrink: 0;
+  height: calc(100vh - var(--nav-h));
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+/* Sharp cover image (replaces blurred background) */
+.dest-detail__cover-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  z-index: 0;
+}
+
+/* Fallback solid bg when no image exists */
+.dest-detail__bg {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #0c2233 0%, #1a4a5e 50%, #0a3040 100%);
+  z-index: 0;
+}
+
+/* Bottom gradient — keeps text readable over the image */
+.dest-detail__overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(4, 16, 26, 0.90) 0%,
+    rgba(4, 16, 26, 0.55) 45%,
+    rgba(4, 16, 26, 0.10) 75%,
+    transparent 100%
+  );
+  z-index: 1;
+}
+
+/* Right-edge fade — blends image into the right panel's blue */
+.dest-detail__fade-right {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    transparent 55%,
+    rgba(8, 42, 72, 0.35) 78%,
+    rgba(8, 42, 72, 0.72) 100%
+  );
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* Text content sits above image layers */
+.dest-detail__info {
+  position: relative;
+  z-index: 2;
+  padding: 40px 36px 44px;
+  color: #fff;
+  z-index: 3;
+}
+
+/* Back link */
+.dest-detail__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: rgba(255, 255, 255, 0.7);
+  text-decoration: none;
+  font-size: 0.82rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  margin-bottom: 20px;
+  transition: color 0.2s;
+}
+.dest-detail__back:hover { color: #fff; }
+.dest-detail__back svg { width: 16px; height: 16px; }
+
+/* Region eyebrow */
+.dest-detail__region {
+  display: inline-block;
+  background: rgba(233, 169, 60, 0.22);
+  color: var(--accent);
+  border: 1px solid rgba(233, 169, 60, 0.38);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 4px 12px;
+  border-radius: 999px;
+  margin-bottom: 14px;
+}
+
+/* Title */
+.dest-detail__name {
+  font-size: clamp(1.6rem, 2.8vw, 2.4rem);
+  font-weight: 800;
+  line-height: 1.15;
+  margin: 0 0 10px;
+  letter-spacing: -0.02em;
+  color: #ffffff;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.55);
+}
+
+/* Tagline */
+.dest-detail__tagline {
+  font-size: 0.97rem;
+  font-weight: 500;
+  color: var(--accent);
+  margin: 0 0 14px;
+  font-style: italic;
+}
+
+/* Description */
+.dest-detail__desc {
+  font-size: 0.88rem;
+  line-height: 1.65;
+  color: rgba(255, 255, 255, 0.78);
+  margin: 0 0 28px;
+  max-height: 110px;
+  overflow: hidden;
+}
+
+/* Stats row */
+.dest-detail__stats {
+  display: flex;
+  gap: 24px;
+}
+.dest-detail__stat {
+  display: flex;
+  flex-direction: column;
+}
+.dest-detail__stat-number {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1;
+}
+.dest-detail__stat-label {
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.55);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  margin-top: 3px;
+}
+
+/* ── Right panel ─────────────────────────────────────────── */
+.dest-detail__right {
+  flex: 1;
+  background: linear-gradient(
+    to right,
+    #d6eaf7 0%,
+    #e8f4fb 12%,
+    #f3f9fd 35%,
+    #f8fcff 100%
+  );
+  overflow-y: auto;
+  min-width: 0;
+}
+
+.dest-detail__right-inner {
+  padding: 40px 36px 56px;
+}
+
+.dest-detail__right-header {
+  margin-bottom: 22px;
+}
+.dest-detail__right-header h2 {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--accent);
+  margin: 0 0 4px;
+  letter-spacing: -0.02em;
+}
+.dest-detail__right-header p {
+  font-size: 0.85rem;
+  color: #5b8fa8;
+  margin: 0;
+}
+
+/* Category filter pills */
+.dest-detail__filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 28px;
+}
+.dest-detail__filter-btn {
+  padding: 7px 18px;
+  border-radius: 999px;
+  border: 1.5px solid rgba(12, 97, 138, 0.22);
+  background: rgba(255, 255, 255, 0.85);
+  color: #0c618a;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s;
+  box-shadow: 0 1px 4px rgba(12, 97, 138, 0.06);
+  white-space: nowrap;
+}
+.dest-detail__filter-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: rgba(233, 169, 60, 0.08);
+}
+.dest-detail__filter-btn.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+  box-shadow: 0 3px 10px rgba(233, 169, 60, 0.30);
+}
+
+/* Badge row for activity cards with no image */
+.act-card__badge-only {
+  padding: 10px 14px 2px;
+}
+
+/* Empty state */
+.dest-detail__empty {
+  text-align: center;
+  padding: 60px 20px;
+  color: #94a3b8;
+}
+
+/* ── Activity cards grid ─────────────────────────────────── */
+.act-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 20px;
+}
+
+.act-card {
+  background: rgba(255, 255, 255, 0.88);
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid #c8deed;
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+.act-card:hover {
+  box-shadow: 0 8px 24px rgba(12, 97, 138, 0.12);
+  transform: translateY(-3px);
+}
+
+/* Image area */
+.act-card__image-wrap {
+  position: relative;
+  height: 160px;
+  overflow: hidden;
+}
+.act-card__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Category badge on card */
+.act-badge {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: capitalize;
+  padding: 3px 10px;
+  border-radius: 999px;
+}
+
+/* Card body */
+.act-card__body {
+  padding: 12px 16px 18px;
+}
+/* Extra top space when no image is shown above body */
+.act-card:not(:has(.act-card__image-wrap)) .act-card__body {
+  padding-top: 18px;
+}
+.act-card__title {
+  font-size: 0.97rem;
+  font-weight: 700;
+  color: #0d4f72;
+  margin: 0 0 6px;
+  line-height: 1.3;
+}
+.act-card__desc {
+  font-size: 0.8rem;
+  line-height: 1.55;
+  color: #3d6e87;
+  margin: 0 0 10px;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Coordinates */
+.act-card__location {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.73rem;
+  color: #5b8fa8;
+}
+.act-card__location svg {
+  width: 13px;
+  height: 13px;
+  flex-shrink: 0;
+  color: var(--teal);
+}
+
+/* Pricing */
+.act-card__price {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin: 6px 0 4px;
+}
+.act-card__price-label {
+  font-size: 0.72rem;
+  color: #94a3b8;
+}
+.act-card__price-value {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #e9a93c;
+}
+
+/* ── Loading / Error states ──────────────────────────────── */
+.dest-detail-loader,
+.dest-detail-error {
+  min-height: calc(100vh - var(--nav-h));
+  margin-top: var(--nav-h);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  color: #64748b;
+}
+.dest-detail-loader__spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid #e2e8f0;
+  border-top-color: var(--teal);
+  border-radius: 50%;
+  animation: spin 0.75s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.dest-detail-back {
+  color: var(--teal);
+  text-decoration: none;
+  font-weight: 600;
+}
+.dest-detail-back:hover { text-decoration: underline; }
+
+/* ── Responsive ──────────────────────────────────────────── */
+@media (max-width: 860px) {
+  .dest-detail {
+    flex-direction: column;
+  }
+  .dest-detail__left {
+    position: relative;
+    top: unset;
+    width: 100%;
+    height: 50vh;
+    min-height: 300px;
+  }
+  .dest-detail__right {
+    overflow-y: visible;
+  }
+}
+
+/* ── Activity card action buttons ────────────────────────── */
+.act-card__actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+
+.act-card__view-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 7px 14px;
+  background: transparent;
+  color: var(--teal, #0c618a);
+  border: 1.5px solid var(--teal, #0c618a);
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background 0.15s, color 0.15s;
+  flex: 1;
+  justify-content: center;
+}
+
+.act-card__view-btn:hover {
+  background: var(--teal, #0c618a);
+  color: #fff;
+}
+
+.act-card__cart-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 7px 14px;
+  background: var(--teal, #0c618a);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.15s;
+  flex: 1;
+  justify-content: center;
+}
+.act-card__cart-btn:hover { opacity: 0.85; }
+
+.act-card__review-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 4px;
+}
+.act-card__stars { color: #f59e0b; font-size: 0.82rem; }
+.act-card__review-count { font-size: 0.72rem; color: #94a3b8; }
+
+/* ── Cart modal overlay ──────────────────────────────────── */
+.act-cart-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+.act-cart-modal {
+  background: #fff;
+  border-radius: 16px;
+  padding: 28px 24px;
+  max-width: 420px;
+  width: 100%;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.2);
+}
+.act-cart-modal h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin: 0 0 6px;
+}
+.act-cart-modal__name {
+  font-size: 0.9rem;
+  color: #475569;
+  margin: 0 0 14px;
+}
+.act-cart-modal__msg {
+  background: #ecfdf5;
+  color: #059669;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  margin-bottom: 12px;
+  text-align: center;
+}
+.act-cart-modal label {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #475569;
+  margin-bottom: 10px;
+}
+.act-cart-modal input,
+.act-cart-modal select {
+  display: block;
+  width: 100%;
+  margin-top: 4px;
+  padding: 8px 10px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 0.85rem;
+}
+.act-cart-modal__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.act-cart-modal__newname {
+  display: block;
+  width: 100%;
+  padding: 8px 10px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  margin-bottom: 4px;
+}
+
+/* Validation error styles */
+.act-cart-modal input.input-error,
+.act-cart-modal select.input-error,
+.act-cart-modal__newname.input-error {
+  border-color: #ef4444;
+  background: #fff5f5;
+}
+.act-cart-modal__field-error {
+  display: block;
+  font-size: 0.73rem;
+  color: #ef4444;
+  font-weight: 500;
+  margin-top: 3px;
+  margin-bottom: 4px;
+}
+.act-cart-modal__actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+.act-cart-modal__btn {
+  flex: 1;
+  padding: 10px 18px;
+  background: var(--teal, #0c618a);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+}
+.act-cart-modal__btn:hover { opacity: 0.85; }
+.act-cart-modal__btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.act-cart-modal__cancel {
+  padding: 10px 16px;
+  background: #f1f5f9;
+  color: #64748b;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+.act-cart-modal__cancel:hover { background: #e2e8f0; }
+.act-cart-modal__login { text-align: center; }
+.act-cart-modal__login p { font-size: 0.85rem; color: #64748b; margin-bottom: 12px; }

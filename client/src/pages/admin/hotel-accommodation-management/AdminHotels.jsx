@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faPenToSquare, faTrash, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { hotelsAPI } from '../../../services/api';
 import AdminLayout from '../AdminLayout';
+import { getHotelImageSrc, handleHotelImageError } from '../../../utils/hotelImage';
 import './AdminHotels.css';
 
 const AdminHotels = () => {
@@ -133,14 +134,12 @@ const AdminHotels = () => {
                     <tr key={hotel.id}>
                       <td>{hotel.id}</td>
                       <td>
-                        <img
-                          src={hotel.hotel_image || '/placeholder-hotel.jpg'}
-                          alt={hotel.hotel_name}
-                          className="table-image"
-                          onError={(event) => {
-                            event.target.src = '/placeholder-hotel.jpg';
-                          }}
-                        />
+                      <img
+                        src={getHotelImageSrc(hotel.hotel_image)}
+                        alt={hotel.hotel_name}
+                        className="table-image"
+                        onError={handleHotelImageError}
+                      />
                       </td>
                       <td className="hotel-name-cell">
                         <strong>{hotel.hotel_name}</strong>

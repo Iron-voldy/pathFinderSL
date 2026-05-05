@@ -1,0 +1,348 @@
+.profile-page {
+  min-height: 100vh;
+  padding: 6.8rem 1.5rem 4rem;
+  background:
+    radial-gradient(circle at top right, rgba(244, 162, 97, 0.15), transparent 28%),
+    linear-gradient(180deg, #f5fbfe 0%, #eef7fb 42%, #ffffff 100%);
+}
+
+.profile-page__hero,
+.profile-page__content {
+  max-width: 1240px;
+  margin: 0 auto;
+}
+
+.profile-page__hero {
+  padding: 2.2rem 2.4rem;
+  border-radius: 28px;
+  background: linear-gradient(135deg, #003b4d 0%, #005f73 56%, #f4a261 100%);
+  color: white;
+  box-shadow: 0 24px 58px rgba(7, 34, 48, 0.2);
+}
+
+.profile-page__eyebrow {
+  margin-bottom: 0.9rem;
+  font-size: 0.82rem;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+  text-transform: uppercase;
+  opacity: 0.85;
+}
+
+.profile-page__hero h1 {
+  font-size: clamp(2rem, 4vw, 3.1rem);
+  margin-bottom: 0.75rem;
+  color: white;
+}
+
+.profile-page__hero p {
+  max-width: 42rem;
+  line-height: 1.8;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.profile-page__content {
+  display: grid;
+  grid-template-columns: 360px minmax(0, 1fr);
+  gap: 1.6rem;
+  margin-top: 1.8rem;
+}
+
+.profile-card {
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(0, 78, 100, 0.08);
+  border-radius: 28px;
+  box-shadow: 0 24px 58px rgba(13, 43, 58, 0.09);
+}
+
+.profile-card--summary {
+  padding: 2rem;
+  height: fit-content;
+}
+
+.profile-avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 32px;
+  background: linear-gradient(135deg, #0b7285 0%, #f4a261 100%);
+  display: grid;
+  place-items: center;
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 1.25rem;
+}
+
+.profile-avatar img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profile-avatar span {
+  position: relative;
+  z-index: 1;
+  font-size: 2rem;
+  font-weight: 700;
+  color: white;
+}
+
+.profile-card--summary h2 {
+  font-size: 1.7rem;
+  margin-bottom: 0.45rem;
+}
+
+.profile-card__email {
+  color: #54707f;
+  margin-bottom: 1rem;
+}
+
+.profile-card__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin-bottom: 1.4rem;
+}
+
+.profile-card__chips span {
+  padding: 0.55rem 0.9rem;
+  border-radius: 999px;
+  background: rgba(0, 95, 115, 0.08);
+  color: #0f5165;
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+.profile-card__meta-list {
+  display: grid;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.profile-card__meta-list div {
+  padding: 0.95rem 1rem;
+  border-radius: 18px;
+  background: #f7fbfd;
+}
+
+.profile-card__meta-list span {
+  display: block;
+  font-size: 0.83rem;
+  color: #6b8391;
+  margin-bottom: 0.35rem;
+}
+
+.profile-card__meta-list strong {
+  color: #183547;
+  line-height: 1.6;
+}
+
+.profile-card__link,
+.profile-card__logout {
+  width: 100%;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 999px;
+  padding: 0.9rem 1.2rem;
+  font-weight: 700;
+}
+
+.profile-card__link {
+  margin-bottom: 0.8rem;
+  background: linear-gradient(135deg, #ff7f50 0%, #f4a261 100%);
+  color: white;
+}
+
+.profile-card__logout {
+  background: rgba(0, 95, 115, 0.08);
+  color: #0f5165;
+}
+
+.profile-card--form {
+  padding: 2rem;
+}
+
+.profile-card__header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1.5rem;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+}
+
+.profile-card__header h2 {
+  font-size: 1.75rem;
+  margin-bottom: 0.4rem;
+}
+
+.profile-card__header p {
+  max-width: 28rem;
+  color: #58717f;
+  line-height: 1.75;
+}
+
+.profile-form {
+  display: grid;
+  gap: 1rem;
+}
+
+.profile-form__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.profile-form__field {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.profile-form__field label {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: #173445;
+}
+
+.profile-form__field input {
+  border-radius: 16px;
+  border: 1px solid rgba(0, 78, 100, 0.16);
+  padding: 0.95rem 1rem;
+  background: rgba(247, 251, 253, 0.92);
+}
+
+.profile-form__field input[readonly] {
+  color: #67808d;
+  background: rgba(231, 241, 245, 0.88);
+}
+
+.profile-form__actions {
+  margin-top: 0.35rem;
+}
+
+.profile-form__submit {
+  min-width: 200px;
+  border-radius: 999px;
+  padding: 0.95rem 1.5rem;
+  background: linear-gradient(135deg, #ff7f50 0%, #f4a261 100%);
+}
+
+.profile-alert {
+  margin-bottom: 1rem;
+  padding: 0.9rem 1rem;
+  border-radius: 16px;
+  line-height: 1.6;
+}
+
+.profile-alert--error {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.18);
+  color: #b42318;
+}
+
+.profile-alert--success {
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.18);
+  color: #047857;
+}
+
+@media (max-width: 980px) {
+  .profile-page__content {
+    grid-template-columns: 1fr;
+  }
+
+  .profile-card__header,
+  .profile-form__grid {
+    grid-template-columns: 1fr;
+    display: grid;
+  }
+}
+
+@media (max-width: 640px) {
+  .profile-page {
+    padding: 6.2rem 1rem 3rem;
+  }
+
+  .profile-page__hero,
+  .profile-card--summary,
+  .profile-card--form {
+    padding: 1.4rem;
+    border-radius: 24px;
+  }
+}
+
+/* ─── Delete Account (Danger Zone) ─────────────────── */
+.profile-card--danger {
+  grid-column: 1 / -1;
+  padding: 2rem;
+  border: 1px solid rgba(180, 35, 24, 0.18);
+  background: rgba(255, 245, 245, 0.92);
+}
+
+.profile-card--danger h2 {
+  font-size: 1.4rem;
+  color: #b42318;
+  margin-bottom: 0.4rem;
+}
+
+.profile-delete-btn {
+  padding: 0.85rem 1.5rem;
+  border-radius: 999px;
+  border: 2px solid rgba(180, 35, 24, 0.3);
+  background: transparent;
+  color: #b42318;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.profile-delete-btn:hover {
+  background: rgba(180, 35, 24, 0.08);
+  border-color: #b42318;
+}
+
+.profile-delete-form {
+  display: grid;
+  gap: 1rem;
+  max-width: 480px;
+}
+
+.profile-delete-warning {
+  color: #b42318;
+  font-size: 0.9rem;
+  font-weight: 500;
+  line-height: 1.6;
+}
+
+.profile-delete-actions {
+  display: flex;
+  gap: 0.8rem;
+}
+
+.profile-delete-cancel {
+  padding: 0.8rem 1.4rem;
+  border-radius: 999px;
+  border: 1px solid rgba(0, 78, 100, 0.16);
+  background: rgba(0, 95, 115, 0.08);
+  color: #0f5165;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.profile-delete-confirm {
+  padding: 0.8rem 1.4rem;
+  border-radius: 999px;
+  border: none;
+  background: #b42318;
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.profile-delete-confirm:hover:not(:disabled) {
+  background: #991b1b;
+}
+.profile-delete-confirm:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

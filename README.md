@@ -105,7 +105,7 @@ travellanka-ai/
 │   ├── server.js                 # Main server
 │   ├── config/                   # Database config
 │   ├── middleware/               # Custom middleware
-│   ├── member3-hotels/           # Hotel management module
+│   ├── hotel-accommodation-management/           # Hotel management module
 │   │   ├── models/               # Sequelize models
 │   │   ├── controllers/          # Business logic
 │   │   ├── routes/               # API routes
@@ -203,3 +203,4 @@ ISC
 **Last Updated**: February 24, 2026  
 **Status**: Backend Operational ✅  
 **Next**: Frontend Development
+

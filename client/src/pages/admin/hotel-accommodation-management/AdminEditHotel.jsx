@@ -7,6 +7,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { hotelsAPI } from '../../../services/api';
 import AdminLayout from '../AdminLayout';
+import { getHotelImageSrc, handleHotelImageError } from '../../../utils/hotelImage';
 import './AdminHotelForm.css';
 
 const getStarCount = (starStr) => {
@@ -331,8 +332,11 @@ const AdminEditHotel = () => {
                   <input type="text" id="city" name="city" value={formData.city} onChange={handleChange} placeholder="City name" />
                 </div>
                 <div className="form-group">
-                  <label htmlFor="micro_location">Area</label>
-                  <input type="text" id="micro_location" name="micro_location" value={formData.micro_location} onChange={handleChange} placeholder="Specific area or neighborhood" />
+                  <label htmlFor="micro_location">
+                    City / Area <span className="required">*</span>
+                    <span className="field-hint"> (AI uses this to find the hotel — enter the canonical city name e.g. Kandy, Mirissa)</span>
+                  </label>
+                  <input type="text" id="micro_location" name="micro_location" value={formData.micro_location} onChange={handleChange} placeholder="e.g. Kandy, Mirissa, Galle, Ella, Yala..." />
                 </div>
                 <div className="form-group">
                   <label htmlFor="country">Country</label>
@@ -491,10 +495,10 @@ const AdminEditHotel = () => {
                 <div className="preview-card__img-wrap">
                   {currentImageUrl ? (
                     <img
-                      src={currentImageUrl}
+                      src={getHotelImageSrc(currentImageUrl)}
                       alt="Hotel"
                       className="preview-card__img"
-                      onError={(e) => { e.target.style.display = 'none'; e.target.nextElementSibling.style.display = 'flex'; }}
+                      onError={handleHotelImageError}
                     />
                   ) : null}
                   <div

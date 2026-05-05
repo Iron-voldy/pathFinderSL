@@ -35,3 +35,34 @@ server/uploads/
 
 # Coverage
 coverage/
+
+# Large database and data files
+*.sql
+*.csv
+db.sql
+tbl_lifestyle.csv
+
+# Media files (large video/image files)
+*.mp4
+*.avi
+*.mov
+*.zip
+*.tar.gz
+*.rar
+
+# Large images at root level
+*.jpg
+*.jpeg
+*.png
+*.gif
+*.webp
+
+# Cache files
+embeddings_cache.json
+faiss_id_map.json
+
+# Temporary files
+*.tmp
+*.temp
+.claude/
+.qodo/

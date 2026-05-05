@@ -1,0 +1,294 @@
+/* ============================================================
+   Admin Budgets Page
+   ============================================================ */
+
+.ab-page {
+  min-height: 100vh;
+  padding-top: 0;
+  background: #f8fafc;
+  color: #1e293b;
+}
+
+.ab-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px 24px 60px;
+}
+
+/* ── Header ──────────────────────────────────────────────── */
+.ab-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 28px;
+}
+
+.ab-title {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #004e64;
+  margin: 0 0 4px;
+}
+
+.ab-subtitle {
+  font-size: 0.88rem;
+  color: #64748b;
+  margin: 0;
+}
+
+.ab-back-btn {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #004e64;
+  text-decoration: none;
+  padding: 8px 16px;
+  border: 1.5px solid #c8deed;
+  border-radius: 8px;
+  transition: all 0.18s;
+}
+
+.ab-back-btn:hover {
+  background: #e8f4fb;
+}
+
+.ab-alert {
+  background: #fee2e2;
+  color: #991b1b;
+  border-radius: 8px;
+  padding: 10px 16px;
+  margin-bottom: 20px;
+  font-size: 0.88rem;
+}
+
+/* ── Stats grid ──────────────────────────────────────────── */
+.ab-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 14px;
+  margin-bottom: 28px;
+}
+
+.ab-stat-card {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.ab-stat-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.ab-stat-num {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #004e64;
+  margin: 0 0 2px;
+}
+
+.ab-stat-label {
+  font-size: 0.72rem;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0;
+}
+
+/* ── Filters ─────────────────────────────────────────────── */
+.ab-filters {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.ab-search {
+  padding: 9px 14px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  color: #1e293b;
+  width: 280px;
+  transition: border-color 0.18s;
+}
+
+.ab-search:focus {
+  outline: none;
+  border-color: #004e64;
+}
+
+.ab-status-tabs {
+  display: flex;
+  gap: 6px;
+}
+
+.ab-status-tab {
+  padding: 7px 16px;
+  border-radius: 999px;
+  border: 1.5px solid #e2e8f0;
+  background: #fff;
+  color: #64748b;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s;
+}
+
+.ab-status-tab:hover {
+  border-color: #004e64;
+  color: #004e64;
+}
+
+.ab-status-tab.active {
+  background: #004e64;
+  border-color: #004e64;
+  color: #fff;
+}
+
+/* ── Table ───────────────────────────────────────────────── */
+.ab-table-wrap {
+  overflow-x: auto;
+  border-radius: 14px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+}
+
+.ab-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.ab-table thead {
+  background: #f0f8ff;
+}
+
+.ab-table th {
+  padding: 13px 14px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #004e64;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  text-align: left;
+  border-bottom: 1.5px solid #d6eaf7;
+}
+
+.ab-table td {
+  padding: 13px 14px;
+  font-size: 0.84rem;
+  color: #1e293b;
+  border-bottom: 1px solid #f1f5f9;
+  vertical-align: middle;
+}
+
+.ab-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.ab-table tbody tr:hover {
+  background: #f8fcff;
+}
+
+.ab-plan-name {
+  display: block;
+  font-weight: 700;
+  color: #0d4f72;
+}
+
+.ab-plan-id {
+  display: block;
+  font-size: 0.72rem;
+  color: #94a3b8;
+  margin-top: 1px;
+}
+
+.ab-user-name {
+  display: block;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.ab-user-email {
+  display: block;
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+.ab-dates {
+  font-size: 0.8rem;
+  color: #5b8fa8;
+  line-height: 1.5;
+}
+
+.ab-num {
+  font-weight: 600;
+  color: #0d4f72;
+}
+
+.ab-na {
+  color: #cbd5e1;
+}
+
+.ab-spent-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ab-spent-val {
+  font-weight: 600;
+  font-size: 0.84rem;
+  color: #10b981;
+}
+
+.ab-spent-val.over {
+  color: #ef4444;
+}
+
+.ab-mini-progress {
+  height: 4px;
+  background: #e8f4fb;
+  border-radius: 99px;
+  width: 80px;
+  overflow: hidden;
+}
+
+.ab-mini-bar {
+  height: 100%;
+  background: #0c618a;
+  border-radius: 99px;
+}
+
+.ab-mini-bar.over {
+  background: #ef4444;
+}
+
+.ab-status-badge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+/* ── Loading / Empty ─────────────────────────────────────── */
+.ab-loading,
+.ab-empty {
+  text-align: center;
+  padding: 60px;
+  color: #64748b;
+  background: #fff;
+  border-radius: 14px;
+  border: 1px solid #e2e8f0;
+  font-size: 0.95rem;
+}

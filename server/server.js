@@ -16,6 +16,7 @@ const lifestyleRoutes = require('./destination-management/routes/lifestyleRoutes
 const budgetRoutes = require('./budget-planner-management/routes/budgetRoutes');
 const reviewRoutes = require('./review-management/routes/reviewRoutes');
 const transportRoutes = require('./driver-management/routes/transportRoutes');
+const aiTripPlannerRoutes = require('./ai-trip-planner-management/routes/aiTripPlannerRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -56,6 +57,7 @@ app.use('/api/lifestyles', lifestyleRoutes);
 app.use('/api/budget', budgetRoutes);
 app.use('/api', reviewRoutes);
 app.use('/api/transport', transportRoutes);
+app.use('/api/ai-trip-planner', aiTripPlannerRoutes);
 
 // Error handling
 app.use(notFound);

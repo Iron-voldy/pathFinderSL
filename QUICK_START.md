@@ -233,9 +233,9 @@ npm install axios gsap react-router-dom
 ### Adding New Features
 
 **New API Endpoint:**
-1. Add route in `server/member3-hotels/routes/hotelRoutes.js`
-2. Add controller in `server/member3-hotels/controllers/hotelController.js`
-3. Add validation in `server/member3-hotels/validations/hotelValidation.js`
+1. Add route in `server/hotel-accommodation-management/routes/hotelRoutes.js`
+2. Add controller in `server/hotel-accommodation-management/controllers/hotelController.js`
+3. Add validation in `server/hotel-accommodation-management/validations/hotelValidation.js`
 4. Restart server
 
 **New Frontend Page:**
@@ -253,7 +253,7 @@ travellanka-ai/
 ├── server/
 │   ├── server.js              ← Start backend here
 │   ├── .env                   ← Database config
-│   └── member3-hotels/        ← Hotel module
+│   └── hotel-accommodation-management/        ← Hotel module
 │       ├── models/            ← Database models
 │       ├── controllers/       ← Business logic
 │       ├── routes/            ← API endpoints
@@ -418,3 +418,4 @@ A: Check browser console (F12) for errors
 **You're all set! 🎉**
 
 Visit http://localhost:3000/ to see your application!
+

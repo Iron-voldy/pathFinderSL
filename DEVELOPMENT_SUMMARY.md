@@ -38,10 +38,10 @@ GET    /api/hotels/stats/summary - Get hotel statistics
 #### Files Created:
 - [server/server.js](d:\pathFinderSL\travellanka-ai\server\server.js)
 - [server/config/database.js](d:\pathFinderSL\travellanka-ai\server\config\database.js)
-- [server/member3-hotels/models/Hotel.js](d:\pathFinderSL\travellanka-ai\server\member3-hotels\models\Hotel.js)
-- [server/member3-hotels/controllers/hotelController.js](d:\pathFinderSL\travellanka-ai\server\member3-hotels\controllers\hotelController.js)
-- [server/member3-hotels/routes/hotelRoutes.js](d:\pathFinderSL\travellanka-ai\server\member3-hotels\routes\hotelRoutes.js)
-- [server/member3-hotels/validations/hotelValidation.js](d:\pathFinderSL\travellanka-ai\server\member3-hotels\validations\hotelValidation.js)
+- [server/hotel-accommodation-management/models/Hotel.js](d:\pathFinderSL\travellanka-ai\server\hotel-accommodation-management\models\Hotel.js)
+- [server/hotel-accommodation-management/controllers/hotelController.js](d:\pathFinderSL\travellanka-ai\server\hotel-accommodation-management\controllers\hotelController.js)
+- [server/hotel-accommodation-management/routes/hotelRoutes.js](d:\pathFinderSL\travellanka-ai\server\hotel-accommodation-management\routes\hotelRoutes.js)
+- [server/hotel-accommodation-management/validations/hotelValidation.js](d:\pathFinderSL\travellanka-ai\server\hotel-accommodation-management\validations\hotelValidation.js)
 - [server/middleware/validateRequest.js](d:\pathFinderSL\travellanka-ai\server\middleware\validateRequest.js)
 - [server/middleware/errorHandler.js](d:\pathFinderSL\travellanka-ai\server\middleware\errorHandler.js)
 - [server/middleware/logger.js](d:\pathFinderSL\travellanka-ai\server\middleware\logger.js)
@@ -177,7 +177,7 @@ travellanka-ai/
 │   ├── server.js                          # Express app entry
 │   ├── config/
 │   │   └── database.js                    # Sequelize config
-│   ├── member3-hotels/
+│   ├── hotel-accommodation-management/
 │   │   ├── models/Hotel.js                # Hotel model
 │   │   ├── controllers/hotelController.js # Business logic
 │   │   ├── routes/hotelRoutes.js          # API routes
@@ -455,3 +455,4 @@ Tests verify:
 **Developed by**: GitHub Copilot (Claude Sonnet 4.5)  
 **Last Updated**: ${new Date().toLocaleDateString()}  
 **License**: Project-specific
+

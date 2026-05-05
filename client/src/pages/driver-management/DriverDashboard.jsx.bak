@@ -1,0 +1,752 @@
+import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faCarSide,
+  faCalendarDays,
+  faChartLine,
+  faPlus,
+  faPenToSquare,
+  faTrash,
+  faCheck,
+  faTimes,
+  faChevronLeft,
+  faChevronRight,
+  faUsers,
+  faMoneyBill,
+  faClipboardList,
+  faClock,
+  faArrowRight,
+  faCircleCheck,
+  faLocationDot,
+  faUpload,
+  faImage,
+  faX,
+  faStar,
+} from '@fortawesome/free-solid-svg-icons';
+import { transportAPI } from '../../services/api';
+import { useAuth } from '../../context/AuthContext';
+import Navbar from '../../components/shared/Navbar';
+import Footer from '../../components/shared/Footer';
+import './DriverDashboard.css';
+
+const VEHICLE_CATEGORIES = [
+  'Small Group (1-4)', 'Medium Group (5-7)', 'Large Group (8-30+)', 'Specialized',
+];
+const VEHICLE_TYPES = [
+  'Hatchback', 'Sedan', 'Luxury Car', 'SUV', '4WD', 'MPV/Minivan',
+  'Passenger Van', 'Mini Coach', 'Tour Bus', 'Campervan', 'Open-top Safari', 'Convertible',
+];
+
+const DriverDashboard = () => {
+  const navigate = useNavigate();
+  const { isAuthenticated, isDriver } = useAuth();
+  const [tab, setTab] = useState('overview');
+  const [stats, setStats] = useState(null);
+  const [gigs, setGigs] = useState([]);
+  const [bookings, setBookings] = useState([]);
+  const [loadingStats, setLoadingStats] = useState(true);
+  const [loadingGigs, setLoadingGigs] = useState(true);
+  const [loadingBookings, setLoadingBookings] = useState(true);
+
+  /* Gig form */
+  const [showGigForm, setShowGigForm] = useState(false);
+  const [editingGig, setEditingGig] = useState(null);
+  const [gigForm, setGigForm] = useState({
+    title: '', description: '', start_location: '', end_location: '',
+    vehicle_category: '', vehicle_type: '', vehicle_make: '', vehicle_model: '',
+    passenger_capacity: '', price_per_day: '', currency: 'LKR',
+    available_from: '', available_to: '', status: 'active',
+  });
+  const [gigImages, setGigImages] = useState([]); // File objects for upload
+  const [gigImagePreviews, setGigImagePreviews] = useState([]); // Preview URLs
+  const gigImageInputRef = useRef(null);
+  const [gigSubmitting, setGigSubmitting] = useState(false);
+
+  /* Calendar */
+  const [calMonth, setCalMonth] = useState(new Date().getMonth());
+  const [calYear, setCalYear] = useState(new Date().getFullYear());
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [selectedBookings, setSelectedBookings] = useState([]);
+
+  useEffect(() => {
+    if (!isAuthenticated) { navigate('/userlogin'); return; }
+    if (!isDriver) { navigate('/driver/apply'); return; }
+    fetchAll();
+  }, [isAuthenticated, isDriver]);
+
+  const fetchAll = () => {
+    fetchStats();
+    fetchGigs();
+    fetchBookings();
+  };
+
+  const fetchStats = async () => {
+    setLoadingStats(true);
+    try { const r = await transportAPI.getDriverStats(); setStats(r.data); }
+    catch (e) { console.error(e); }
+    finally { setLoadingStats(false); }
+  };
+
+  const fetchGigs = async () => {
+    setLoadingGigs(true);
+    try { const r = await transportAPI.getMyGigs(); setGigs(r.data || []); }
+    catch (e) { console.error(e); }
+    finally { setLoadingGigs(false); }
+  };
+
+  const fetchBookings = async () => {
+    setLoadingBookings(true);
+    try { const r = await transportAPI.getDriverBookings(); setBookings(r.data || []); }
+    catch (e) { console.error(e); }
+    finally { setLoadingBookings(false); }
+  };
+
+  /* Gig CRUD */
+  const resetGigForm = () => {
+    setGigForm({
+      title: '', description: '', start_location: '', end_location: '',
+      vehicle_category: '', vehicle_type: '', vehicle_make: '', vehicle_model: '',
+      passenger_capacity: '', price_per_day: '', currency: 'LKR',
+      available_from: '', available_to: '', status: 'active',
+    });
+    setGigImages([]);
+    setGigImagePreviews([]);
+    if (gigImageInputRef.current) gigImageInputRef.current.value = '';
+    setEditingGig(null);
+    setShowGigForm(false);
+  };
+
+  const openEditGig = (g) => {
+    setEditingGig(g);
+    setGigForm({
+      title: g.title, description: g.description || '', start_location: g.start_location,
+      end_location: g.end_location, vehicle_category: g.vehicle_category,
+      vehicle_type: g.vehicle_type, vehicle_make: g.vehicle_make || '',
+      vehicle_model: g.vehicle_model || '', passenger_capacity: g.passenger_capacity,
+      price_per_day: g.price_per_day, currency: g.currency || 'LKR',
+      available_from: g.available_from || '',
+      available_to: g.available_to || '', status: g.status,
+    });
+    setGigImages([]);
+    setGigImagePreviews([]);
+    setShowGigForm(true);
+  };
+
+  const handleGigImages = (newFiles) => {
+    const remaining = 5 - gigImages.length;
+    if (remaining <= 0) return;
+    const toAdd = Array.from(newFiles).slice(0, remaining);
+    const previews = toAdd.map((f) => URL.createObjectURL(f));
+    setGigImages((p) => [...p, ...toAdd]);
+    setGigImagePreviews((p) => [...p, ...previews]);
+  };
+
+  const removeGigImage = (idx) => {
+    setGigImages((p) => p.filter((_, i) => i !== idx));
+    setGigImagePreviews((p) => p.filter((_, i) => i !== idx));
+    if (gigImageInputRef.current) gigImageInputRef.current.value = '';
+  };
+
+  const submitGig = async (e) => {
+    e.preventDefault();
+    setGigSubmitting(true);
+    try {
+      const formData = new FormData();
+      formData.append('title', gigForm.title);
+      formData.append('description', gigForm.description || '');
+      formData.append('start_location', gigForm.start_location);
+      formData.append('end_location', gigForm.end_location);
+      formData.append('vehicle_category', gigForm.vehicle_category);
+      formData.append('vehicle_type', gigForm.vehicle_type);
+      formData.append('vehicle_make', gigForm.vehicle_make || '');
+      formData.append('vehicle_model', gigForm.vehicle_model || '');
+      formData.append('passenger_capacity', parseInt(gigForm.passenger_capacity));
+      formData.append('price_per_day', parseFloat(gigForm.price_per_day));
+      formData.append('currency', gigForm.currency);
+      formData.append('available_from', gigForm.available_from || '');
+      formData.append('available_to', gigForm.available_to || '');
+      formData.append('status', gigForm.status);
+      
+      gigImages.forEach((file) => formData.append('gigImages', file));
+      
+      if (editingGig) {
+        await transportAPI.updateGig(editingGig.id, formData);
+      } else {
+        await transportAPI.createGig(formData);
+      }
+      resetGigForm();
+      fetchGigs();
+      fetchStats();
+    } catch (err) {
+      alert(err?.response?.data?.message || 'Failed to save gig');
+    } finally {
+      setGigSubmitting(false);
+    }
+  };
+
+  const deleteGig = async (id) => {
+    if (!confirm('Delete this gig?')) return;
+    try { await transportAPI.deleteGig(id); fetchGigs(); fetchStats(); }
+    catch (e) { alert('Failed to delete gig'); }
+  };
+
+  /* Booking actions */
+  const handleBookingAction = async (id, status) => {
+    try { await transportAPI.updateBookingStatus(id, status); fetchBookings(); fetchStats(); }
+    catch (e) { alert('Failed to update booking'); }
+  };
+
+  /* Calendar logic */
+  const calDays = useMemo(() => {
+    const firstDay = new Date(calYear, calMonth, 1).getDay();
+    const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+    const days = [];
+    for (let i = 0; i < firstDay; i++) days.push(null);
+    for (let d = 1; d <= daysInMonth; d++) days.push(d);
+    return days;
+  }, [calMonth, calYear]);
+
+  const bookedDates = useMemo(() => {
+    const map = {};
+    bookings.forEach((b) => {
+      if (b.status === 'cancelled') return;
+      const s = new Date(b.start_date);
+      const e = new Date(b.end_date);
+      for (let d = new Date(s); d <= e; d.setDate(d.getDate() + 1)) {
+        const key = d.toISOString().slice(0, 10);
+        if (!map[key]) map[key] = [];
+        map[key].push(b);
+      }
+    });
+    return map;
+  }, [bookings]);
+
+  const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+  /* Handle calendar date click */
+  const handleDateClick = (date, bookings) => {
+    if (bookings.length === 0) return;
+    const dateStr = `${calYear}-${String(calMonth + 1).padStart(2, '0')}-${String(date).padStart(2, '0')}`;
+    setSelectedDate(dateStr);
+    setSelectedBookings(bookings);
+  };
+
+  /* Monthly revenue chart data */
+  const chartData = useMemo(() => {
+    if (!stats?.monthlyRevenue) return [];
+    const entries = Object.entries(stats.monthlyRevenue).sort();
+    const maxVal = Math.max(...entries.map(([, v]) => v), 1);
+    return entries.map(([month, value]) => ({
+      month: month.slice(5),
+      value,
+      pct: (value / maxVal) * 100,
+    }));
+  }, [stats]);
+
+  const TABS = [
+    { key: 'overview', icon: faChartLine, label: 'Overview' },
+    { key: 'gigs', icon: faCarSide, label: 'My Gigs' },
+    { key: 'bookings', icon: faClipboardList, label: 'Bookings' },
+    { key: 'calendar', icon: faCalendarDays, label: 'Calendar' },
+  ];
+
+  return (
+    <>
+      <Navbar />
+      <div className="dd-page">
+        <div className="dd-container">
+          <div className="dd-header">
+            <h1>Driver Dashboard</h1>
+            <button className="dd-primary-btn" onClick={() => { resetGigForm(); setShowGigForm(true); setTab('gigs'); }}>
+              <FontAwesomeIcon icon={faPlus} /> New Gig
+            </button>
+          </div>
+
+          {/* Tabs */}
+          <div className="dd-tabs">
+            {TABS.map((t) => (
+              <button
+                key={t.key}
+                className={`dd-tab ${tab === t.key ? 'active' : ''}`}
+                onClick={() => setTab(t.key)}
+              >
+                <FontAwesomeIcon icon={t.icon} /> {t.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Overview */}
+          {tab === 'overview' && (
+            <div className="dd-overview">
+              {loadingStats ? (
+                <div className="dd-loading"><div className="dd-spinner" /></div>
+              ) : stats ? (
+                <>
+                  <div className="dd-stat-grid">
+                    <div className="dd-stat-card">
+                      <FontAwesomeIcon icon={faCarSide} className="dd-stat-icon" />
+                      <div className="dd-stat-value">{stats.activeGigs}</div>
+                      <div className="dd-stat-label">Active Gigs</div>
+                    </div>
+                    <div className="dd-stat-card">
+                      <FontAwesomeIcon icon={faClipboardList} className="dd-stat-icon" />
+                      <div className="dd-stat-value">{stats.totalBookings}</div>
+                      <div className="dd-stat-label">Total Bookings</div>
+                    </div>
+                    <div className="dd-stat-card">
+                      <FontAwesomeIcon icon={faClock} className="dd-stat-icon" />
+                      <div className="dd-stat-value">{stats.pendingBookings}</div>
+                      <div className="dd-stat-label">Pending</div>
+                    </div>
+                    <div className="dd-stat-card">
+                      <FontAwesomeIcon icon={faCircleCheck} className="dd-stat-icon" />
+                      <div className="dd-stat-value">{stats.completedBookings}</div>
+                      <div className="dd-stat-label">Completed</div>
+                    </div>
+                    <div className="dd-stat-card dd-stat-card--wide">
+                      <FontAwesomeIcon icon={faMoneyBill} className="dd-stat-icon" />
+                      <div className="dd-stat-value">LKR {stats.totalRevenue?.toLocaleString()}</div>
+                      <div className="dd-stat-label">Total Revenue</div>
+                    </div>
+                  </div>
+
+                  {/* Bar chart */}
+                  {chartData.length > 0 && (
+                    <div className="dd-chart-card">
+                      <h3>Monthly Revenue</h3>
+                      <div className="dd-chart">
+                        {chartData.map((d) => (
+                          <div key={d.month} className="dd-chart-bar-wrap">
+                            <div className="dd-chart-bar" style={{ height: `${d.pct}%` }}>
+                              <span className="dd-chart-val">LKR {d.value.toLocaleString()}</span>
+                            </div>
+                            <span className="dd-chart-label">{d.month}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </>
+              ) : null}
+            </div>
+          )}
+
+          {/* Gigs */}
+          {tab === 'gigs' && (
+            <div className="dd-gigs">
+              {showGigForm && (
+                <div className="dd-gig-form-card">
+                  <div className="dd-form-header">
+                    <h2>{editingGig ? 'Edit Gig' : 'Create New Gig'}</h2>
+                    <button type="button" className="dd-form-close" onClick={resetGigForm}>
+                      <FontAwesomeIcon icon={faX} />
+                    </button>
+                  </div>
+                  <form onSubmit={submitGig}>
+                    {/* Location Row */}
+                    <div className="dd-form-section">
+                      <h3>Route Details</h3>
+                      <div className="dd-form-row">
+                        <div className="dd-form-group">
+                          <label>From *</label>
+                          <input required placeholder="Start location (e.g., Colombo, Airport)" value={gigForm.start_location} onChange={(e) => setGigForm((p) => ({ ...p, start_location: e.target.value }))} />
+                        </div>
+                        <div className="dd-form-group">
+                          <label>To *</label>
+                          <input required placeholder="End location (e.g., Galle, City)" value={gigForm.end_location} onChange={(e) => setGigForm((p) => ({ ...p, end_location: e.target.value }))} />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Title */}
+                    <div className="dd-form-section">
+                      <h3>Gig Information</h3>
+                      <div className="dd-form-group">
+                        <label>Title *</label>
+                        <input required placeholder="E.g., Colombo Airport Transfer" value={gigForm.title} onChange={(e) => setGigForm((p) => ({ ...p, title: e.target.value }))} />
+                      </div>
+                      <div className="dd-form-group">
+                        <label>Description</label>
+                        <textarea rows={3} placeholder="Tell passengers what to expect..." value={gigForm.description} onChange={(e) => setGigForm((p) => ({ ...p, description: e.target.value }))} />
+                      </div>
+                    </div>
+
+                    {/* Vehicle Details */}
+                    <div className="dd-form-section">
+                      <h3>Vehicle Details</h3>
+                      <div className="dd-form-row">
+                        <div className="dd-form-group">
+                          <label>Category *</label>
+                          <select required value={gigForm.vehicle_category} onChange={(e) => setGigForm((p) => ({ ...p, vehicle_category: e.target.value }))}>
+                            <option value="">Select category</option>
+                            {VEHICLE_CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
+                          </select>
+                        </div>
+                        <div className="dd-form-group">
+                          <label>Vehicle Type *</label>
+                          <select required value={gigForm.vehicle_type} onChange={(e) => setGigForm((p) => ({ ...p, vehicle_type: e.target.value }))}>
+                            <option value="">Select type</option>
+                            {VEHICLE_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
+                          </select>
+                        </div>
+                      </div>
+                      <div className="dd-form-row">
+                        <div className="dd-form-group">
+                          <label>Make (Optional)</label>
+                          <input placeholder="e.g. Toyota" value={gigForm.vehicle_make} onChange={(e) => setGigForm((p) => ({ ...p, vehicle_make: e.target.value }))} />
+                        </div>
+                        <div className="dd-form-group">
+                          <label>Model (Optional)</label>
+                          <input placeholder="e.g. HiAce" value={gigForm.vehicle_model} onChange={(e) => setGigForm((p) => ({ ...p, vehicle_model: e.target.value }))} />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Capacity & Pricing */}
+                    <div className="dd-form-section">
+                      <h3>Capacity & Pricing</h3>
+                      <div className="dd-form-row">
+                        <div className="dd-form-group">
+                          <label>Passengers *</label>
+                          <input type="number" required min="1" max="50" value={gigForm.passenger_capacity} onChange={(e) => setGigForm((p) => ({ ...p, passenger_capacity: e.target.value }))} />
+                        </div>
+                        <div className="dd-form-group">
+                          <label>Price / Day (LKR) *</label>
+                          <input type="number" required min="0" step="100" value={gigForm.price_per_day} onChange={(e) => setGigForm((p) => ({ ...p, price_per_day: e.target.value }))} placeholder="5000" />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Availability */}
+                    <div className="dd-form-section">
+                      <h3>Availability</h3>
+                      <div className="dd-form-row">
+                        <div className="dd-form-group">
+                          <label>Available From</label>
+                          <input type="date" value={gigForm.available_from} onChange={(e) => setGigForm((p) => ({ ...p, available_from: e.target.value }))} />
+                        </div>
+                        <div className="dd-form-group">
+                          <label>Available To</label>
+                          <input type="date" value={gigForm.available_to} onChange={(e) => setGigForm((p) => ({ ...p, available_to: e.target.value }))} />
+                        </div>
+                        <div className="dd-form-group">
+                          <label>Status</label>
+                          <select value={gigForm.status} onChange={(e) => setGigForm((p) => ({ ...p, status: e.target.value }))}>
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Images Upload */}
+                    <div className="dd-form-section">
+                      <h3>Gig Photos ({gigImages.length}/5)</h3>
+                      <div
+                        className="dd-upload-zone"
+                        onDragOver={(e) => { e.preventDefault(); e.currentTarget.classList.add('drag-active'); }}
+                        onDragLeave={(e) => e.currentTarget.classList.remove('drag-active')}
+                        onDrop={(e) => {
+                          e.preventDefault();
+                          e.currentTarget.classList.remove('drag-active');
+                          handleGigImages(e.dataTransfer.files);
+                        }}
+                      >
+                        <FontAwesomeIcon icon={faUpload} className="dd-upload-icon" />
+                        <h4>Drag & drop photos here</h4>
+                        <p>or <button type="button" className="dd-upload-trigger" onClick={() => gigImageInputRef.current?.click()}>click to select</button></p>
+                        <input
+                          ref={gigImageInputRef}
+                          type="file"
+                          multiple
+                          accept="image/*"
+                          style={{ display: 'none' }}
+                          onChange={(e) => handleGigImages(e.target.files)}
+                        />
+                      </div>
+
+                      {gigImagePreviews.length > 0 && (
+                        <div className="dd-image-grid">
+                          {gigImagePreviews.map((url, idx) => (
+                            <div key={idx} className="dd-image-thumb">
+                              <img src={url} alt={`Gig ${idx + 1}`} />
+                              <button
+                                type="button"
+                                className="dd-image-remove"
+                                onClick={() => removeGigImage(idx)}
+                              >
+                                <FontAwesomeIcon icon={faX} />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Actions */}
+                    <div className="dd-form-actions">
+                      <button type="button" className="dd-secondary-btn" onClick={resetGigForm}>
+                        Cancel
+                      </button>
+                      <button type="submit" className="dd-primary-btn" disabled={gigSubmitting}>
+                        {gigSubmitting ? 'Saving...' : editingGig ? 'Update Gig' : 'Create Gig'}
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              )}
+
+              {loadingGigs ? (
+                <div className="dd-loading"><div className="dd-spinner" /></div>
+              ) : gigs.length === 0 ? (
+                <div className="dd-empty">
+                  <FontAwesomeIcon icon={faCarSide} className="dd-empty-icon" />
+                  <h3>No gigs yet</h3>
+                  <p>Create your first transport gig to start receiving bookings</p>
+                  <button className="dd-primary-btn" onClick={() => { resetGigForm(); setShowGigForm(true); }}>
+                    <FontAwesomeIcon icon={faPlus} /> Create Gig
+                  </button>
+                </div>
+              ) : (
+                <div className="dd-gig-list">
+                  {gigs.map((g) => (
+                    <div key={g.id} className="dd-gig-item">
+                      <div className="dd-gig-info">
+                        <h3>{g.title}</h3>
+                        <div className="dd-gig-route">
+                          <FontAwesomeIcon icon={faLocationDot} /> {g.start_location} <FontAwesomeIcon icon={faArrowRight} /> {g.end_location}
+                        </div>
+                        <div className="dd-gig-tags">
+                          <span className="dd-tag">{g.vehicle_type}</span>
+                          <span className="dd-tag"><FontAwesomeIcon icon={faUsers} /> {g.passenger_capacity}</span>
+                          <span className={`dd-tag dd-tag--${g.status}`}>{g.status}</span>
+                        </div>
+                      </div>
+                      <div className="dd-gig-price">
+                        {g.currency} {parseFloat(g.price_per_day).toLocaleString()}<small>/day</small>
+                      </div>
+                      <div className="dd-gig-actions">
+                        <button className="dd-icon-btn" title="Edit" onClick={() => openEditGig(g)}>
+                          <FontAwesomeIcon icon={faPenToSquare} />
+                        </button>
+                        <button className="dd-icon-btn dd-icon-btn--danger" title="Delete" onClick={() => deleteGig(g.id)}>
+                          <FontAwesomeIcon icon={faTrash} />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Bookings */}
+          {tab === 'bookings' && (
+            <div className="dd-bookings">
+              {loadingBookings ? (
+                <div className="dd-loading"><div className="dd-spinner" /></div>
+              ) : bookings.length === 0 ? (
+                <div className="dd-empty">
+                  <FontAwesomeIcon icon={faClipboardList} className="dd-empty-icon" />
+                  <h3>No bookings yet</h3>
+                  <p>Bookings from clients will appear here</p>
+                </div>
+              ) : (
+                <div className="dd-booking-list">
+                  {bookings.map((b) => (
+                    <div key={b.id} className={`dd-booking-item dd-booking--${b.status}`}>
+                      <div className="dd-booking-info">
+                        <h3>{b.gig?.title || `Gig #${b.gig_id}`}</h3>
+                        <div className="dd-booking-client">
+                          Client: <strong>{b.client?.full_name || 'Unknown'}</strong>
+                          {b.client?.email && <span> ({b.client.email})</span>}
+                        </div>
+                        <div className="dd-booking-dates">
+                          <FontAwesomeIcon icon={faCalendarDays} /> {b.start_date} to {b.end_date}
+                        </div>
+                        <div className="dd-booking-meta">
+                          <span><FontAwesomeIcon icon={faUsers} /> {b.passenger_count}</span>
+                          <span><FontAwesomeIcon icon={faLocationDot} /> {b.pickup_location} → {b.dropoff_location}</span>
+                        </div>
+                        {b.notes && <p className="dd-booking-notes">{b.notes}</p>}
+                      </div>
+                      <div className="dd-booking-right">
+                        <div className="dd-booking-price">{b.currency} {parseFloat(b.total_price).toLocaleString()}</div>
+                        <span className={`dd-status-badge dd-status--${b.status}`}>{b.status}</span>
+                        {b.status === 'pending' && (
+                          <div className="dd-booking-actions">
+                            <button className="dd-action-btn dd-action--confirm" onClick={() => handleBookingAction(b.id, 'confirmed')}>
+                              <FontAwesomeIcon icon={faCheck} /> Confirm
+                            </button>
+                            <button className="dd-action-btn dd-action--cancel" onClick={() => handleBookingAction(b.id, 'cancelled')}>
+                              <FontAwesomeIcon icon={faTimes} /> Decline
+                            </button>
+                          </div>
+                        )}
+                        {b.status === 'confirmed' && (
+                          <button className="dd-action-btn dd-action--complete" onClick={() => handleBookingAction(b.id, 'completed')}>
+                            <FontAwesomeIcon icon={faCircleCheck} /> Complete
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Calendar */}
+          {tab === 'calendar' && (
+            <div className="dd-calendar-section">
+              <div className="dd-cal-header">
+                <button onClick={() => {
+                  if (calMonth === 0) { setCalMonth(11); setCalYear(calYear - 1); }
+                  else setCalMonth(calMonth - 1);
+                }}>
+                  <FontAwesomeIcon icon={faChevronLeft} />
+                </button>
+                <h3>{monthNames[calMonth]} {calYear}</h3>
+                <button onClick={() => {
+                  if (calMonth === 11) { setCalMonth(0); setCalYear(calYear + 1); }
+                  else setCalMonth(calMonth + 1);
+                }}>
+                  <FontAwesomeIcon icon={faChevronRight} />
+                </button>
+              </div>
+
+              <div className="dd-cal-grid">
+                {['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map((d) => (
+                  <div key={d} className="dd-cal-day-label">{d}</div>
+                ))}
+                {calDays.map((day, i) => {
+                  if (day === null) return <div key={`e-${i}`} className="dd-cal-cell dd-cal-empty" />;
+                  const dateStr = `${calYear}-${String(calMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                  const dayBookings = bookedDates[dateStr] || [];
+                  const isToday = dateStr === new Date().toISOString().slice(0, 10);
+
+                  return (
+                    <div
+                      key={day}
+                      className={`dd-cal-cell ${isToday ? 'dd-cal-today' : ''} ${dayBookings.length > 0 ? 'dd-cal-booked' : ''} ${dayBookings.length > 0 ? 'dd-cal-clickable' : ''}`}
+                      onClick={() => handleDateClick(day, dayBookings)}
+                      style={{ cursor: dayBookings.length > 0 ? 'pointer' : 'default' }}
+                    >
+                      <span className="dd-cal-date">{day}</span>
+                      {dayBookings.length > 0 && (
+                        <div className="dd-cal-dots">
+                          {dayBookings.slice(0, 3).map((b, j) => (
+                            <span
+                              key={j}
+                              className={`dd-cal-dot dd-dot--${b.status}`}
+                              title={`${b.client?.full_name || 'Client'} (${b.status})`}
+                            />
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+
+              <div className="dd-cal-legend">
+                <span><span className="dd-cal-dot dd-dot--pending" /> Pending</span>
+                <span><span className="dd-cal-dot dd-dot--confirmed" /> Confirmed</span>
+                <span><span className="dd-cal-dot dd-dot--completed" /> Completed</span>
+              </div>
+
+              {/* Booking Details Modal */}
+              {selectedDate && selectedBookings.length > 0 && (
+                <div className="dd-modal-overlay" onClick={() => setSelectedDate(null)}>
+                  <div className="dd-modal-content" onClick={(e) => e.stopPropagation()}>
+                    <div className="dd-modal-header">
+                      <h2>Bookings for {new Date(selectedDate).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</h2>
+                      <button className="dd-modal-close" onClick={() => setSelectedDate(null)}>
+                        <FontAwesomeIcon icon={faX} />
+                      </button>
+                    </div>
+                    <div className="dd-modal-bookings">
+                      {selectedBookings.map((b) => (
+                        <div key={b.id} className={`dd-modal-booking dd-booking--${b.status}`}>
+                          <div className="dd-mb-header">
+                            <div>
+                              <h3>{b.gig?.title || `Gig #${b.gig_id}`}</h3>
+                              <p className="dd-mb-client">
+                                <strong>{b.client?.full_name || 'Unknown Client'}</strong>
+                              </p>
+                            </div>
+                            <span className={`dd-status-badge dd-status--${b.status}`}>{b.status}</span>
+                          </div>
+                          <div className="dd-mb-grid">
+                            <div className="dd-mb-item">
+                              <span className="dd-mb-label"><FontAwesomeIcon icon={faCalendarDays} /> Duration</span>
+                              <span className="dd-mb-value">{b.start_date} to {b.end_date}</span>
+                            </div>
+                            <div className="dd-mb-item">
+                              <span className="dd-mb-label"><FontAwesomeIcon icon={faUsers} /> Passengers</span>
+                              <span className="dd-mb-value">{b.passenger_count}</span>
+                            </div>
+                            <div className="dd-mb-item">
+                              <span className="dd-mb-label"><FontAwesomeIcon icon={faLocationDot} /> Pickup</span>
+                              <span className="dd-mb-value">{b.pickup_location}</span>
+                            </div>
+                            <div className="dd-mb-item">
+                              <span className="dd-mb-label"><FontAwesomeIcon icon={faLocationDot} /> Dropoff</span>
+                              <span className="dd-mb-value">{b.dropoff_location}</span>
+                            </div>
+                            <div className="dd-mb-item">
+                              <span className="dd-mb-label"><FontAwesomeIcon icon={faMoneyBill} /> Total Price</span>
+                              <span className="dd-mb-value dd-mb-price">{b.currency} {parseFloat(b.total_price).toLocaleString()}</span>
+                            </div>
+                            {b.client?.email && (
+                              <div className="dd-mb-item">
+                                <span className="dd-mb-label">Email</span>
+                                <span className="dd-mb-value">{b.client.email}</span>
+                              </div>
+                            )}
+                            {b.client?.phone && (
+                              <div className="dd-mb-item">
+                                <span className="dd-mb-label">Phone</span>
+                                <span className="dd-mb-value">{b.client.phone}</span>
+                              </div>
+                            )}
+                          </div>
+                          {b.notes && (
+                            <div className="dd-mb-notes">
+                              <strong>Notes:</strong> {b.notes}
+                            </div>
+                          )}
+                          {b.status === 'pending' && (
+                            <div className="dd-mb-actions">
+                              <button className="dd-action-btn dd-action--confirm" onClick={() => { handleBookingAction(b.id, 'confirmed'); setSelectedDate(null); }}>
+                                <FontAwesomeIcon icon={faCheck} /> Confirm
+                              </button>
+                              <button className="dd-action-btn dd-action--cancel" onClick={() => { handleBookingAction(b.id, 'cancelled'); setSelectedDate(null); }}>
+                                <FontAwesomeIcon icon={faTimes} /> Decline
+                              </button>
+                            </div>
+                          )}
+                          {b.status === 'confirmed' && (
+                            <div className="dd-mb-actions">
+                              <button className="dd-action-btn dd-action--complete" onClick={() => { handleBookingAction(b.id, 'completed'); setSelectedDate(null); }}>
+                                <FontAwesomeIcon icon={faCircleCheck} /> Complete
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+      <Footer />
+    </>
+  );
+};
+
+export default DriverDashboard;

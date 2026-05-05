@@ -1,0 +1,153 @@
+/* Shared form page styles for Admin Lifestyle forms
+   Class: .lifestyle-form (form), .admin-page (wrapper) */
+
+.admin-page {
+  min-height: 100vh;
+  background: #f5f7fa;
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 1.5rem 2rem 4rem;
+  flex: 1;
+}
+
+.form-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+.form-header h1 {
+  font-size: 1.9rem;
+  color: #1a1a1a;
+  margin: 0;
+}
+
+.btn-back {
+  padding: 0.65rem 1.25rem;
+  background: #e2e8f0;
+  color: #2d3748;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-back:hover { background: #cbd5e0; }
+
+.lifestyle-form {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+  overflow: hidden;
+}
+
+.form-section {
+  padding: 2rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+.form-section:last-of-type { border-bottom: none; }
+.form-section h2 {
+  font-size: 1.25rem;
+  color: #2d3748;
+  margin: 0 0 1.5rem;
+}
+
+.form-group { margin-bottom: 1.4rem; }
+.form-group label {
+  display: block;
+  margin-bottom: 0.45rem;
+  font-weight: 600;
+  color: #4a5568;
+  font-size: 0.9rem;
+}
+.form-group input,
+.form-group textarea,
+.form-group select {
+  width: 100%;
+  padding: 0.7rem 0.9rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-family: inherit;
+  color: #1a1a1a;
+  background: #fff;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  box-sizing: border-box;
+}
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: #0c618a;
+  box-shadow: 0 0 0 3px rgba(12,97,138,0.1);
+}
+.form-group textarea { resize: vertical; min-height: 100px; }
+
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.2rem;
+}
+
+.image-preview {
+  margin-top: 0.75rem;
+  border-radius: 8px;
+  overflow: hidden;
+  max-width: 380px;
+  max-height: 220px;
+}
+.image-preview img {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+  display: block;
+}
+
+.form-actions {
+  padding: 1.5rem 2rem;
+  background: #f7fafc;
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+}
+
+.btn-cancel,
+.btn-submit {
+  padding: 0.8rem 1.8rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-cancel { background: #e2e8f0; color: #2d3748; }
+.btn-cancel:hover { background: #cbd5e0; }
+
+.btn-submit {
+  background: linear-gradient(135deg, #0c618a 0%, #0f87b0 100%);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(12,97,138,0.3);
+}
+.btn-submit:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(12,97,138,0.4);
+}
+.btn-submit:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.loading-page,
+.error-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  color: #4a5568;
+}

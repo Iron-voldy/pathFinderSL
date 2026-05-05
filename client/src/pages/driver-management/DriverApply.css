@@ -1,0 +1,384 @@
+/* ===================================================
+   Driver Application Page
+   =================================================== */
+
+.da-page {
+  min-height: 100vh;
+  background: #f5f6fa;
+  padding-top: 80px;
+  padding-bottom: 3rem;
+}
+
+.da-container {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+.da-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.da-header h1 {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #1e293b;
+  margin-bottom: 0.3rem;
+}
+
+.da-header p {
+  font-size: 1rem;
+  color: #64748b;
+}
+
+/* Steps */
+.da-steps {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  margin-bottom: 2rem;
+}
+
+.da-step {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  opacity: 0.4;
+  transition: opacity 0.3s;
+}
+
+.da-step.active {
+  opacity: 1;
+}
+
+.da-step-num {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--color-primary, #004e64);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.da-step-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.da-step-line {
+  width: 40px;
+  height: 2px;
+  background: #cbd5e1;
+  margin: 0 0.5rem;
+}
+
+/* Form */
+.da-form-section {
+  background: #fff;
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+
+.da-section-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 12px;
+  background: rgba(0,78,100,0.08);
+  color: var(--color-primary, #004e64);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  margin-bottom: 0.8rem;
+}
+
+.da-form-section h2 {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 0.25rem;
+}
+
+.da-form-section > p {
+  font-size: 0.88rem;
+  color: #64748b;
+  margin-bottom: 1.5rem;
+}
+
+.da-form-group {
+  margin-bottom: 1rem;
+}
+
+.da-form-group label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #475569;
+  margin-bottom: 0.35rem;
+}
+
+.da-form-group input,
+.da-form-group select,
+.da-form-group textarea {
+  width: 100%;
+  padding: 0.65rem 0.8rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-family: inherit;
+  color: #1e293b;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+}
+
+.da-form-group input:focus,
+.da-form-group select:focus,
+.da-form-group textarea:focus {
+  border-color: var(--color-primary, #004e64);
+  outline: none;
+}
+
+.da-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.da-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.da-primary-btn {
+  padding: 0.7rem 1.5rem;
+  background: var(--color-primary, #004e64);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.da-primary-btn:hover:not(:disabled) {
+  background: var(--color-primary-dark, #003544);
+  transform: translateY(-1px);
+}
+
+.da-primary-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.da-back-btn {
+  padding: 0.7rem 1.5rem;
+  background: #f1f5f9;
+  color: #475569;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.da-back-btn:hover {
+  background: #e2e8f0;
+}
+
+/* Summary */
+.da-summary {
+  background: #f8fafc;
+  border-radius: 12px;
+  padding: 1.2rem;
+  margin-top: 1rem;
+}
+
+.da-summary h3 {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 0.6rem;
+}
+
+.da-summary-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: #475569;
+}
+
+/* Status cards */
+.da-status-card {
+  max-width: 500px;
+  margin: 4rem auto;
+  text-align: center;
+  background: #fff;
+  border-radius: 16px;
+  padding: 3rem 2rem;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+
+.da-status-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.da-pending .da-status-icon { color: #f59e0b; }
+.da-approved .da-status-icon { color: #10b981; }
+.da-rejected .da-status-icon { color: #ef4444; }
+
+.da-status-card h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 0.4rem;
+}
+
+.da-status-card p {
+  color: #64748b;
+  margin-bottom: 1.5rem;
+}
+
+.da-loading {
+  text-align: center;
+  padding: 6rem 2rem;
+  color: #64748b;
+}
+
+.da-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #e2e8f0;
+  border-top: 3px solid var(--color-primary, #004e64);
+  border-radius: 50%;
+  animation: daSpin 0.8s linear infinite;
+  margin: 0 auto 1rem;
+}
+
+@keyframes daSpin {
+  to { transform: rotate(360deg); }
+}
+
+@media (max-width: 600px) {
+  .da-form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .da-summary-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── License upload zones ── */
+.da-required { color: #e53e3e; margin-left: 2px; }
+.da-optional { color: #94a3b8; font-size: 0.8rem; font-weight: 400; margin-left: 4px; }
+
+.da-upload-zone {
+  border: 2px dashed #cbd5e1;
+  border-radius: 12px;
+  background: #f8fafc;
+  padding: 2rem 1rem;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+.da-upload-zone:hover {
+  border-color: var(--color-primary, #004e64);
+  background: #edf6ff;
+}
+.da-upload-icon {
+  font-size: 2rem;
+  color: #94a3b8;
+  margin-bottom: 0.5rem;
+}
+.da-upload-zone:hover .da-upload-icon { color: var(--color-primary, #004e64); }
+.da-upload-label {
+  font-weight: 600;
+  color: #334155;
+  margin: 0.25rem 0;
+}
+.da-upload-hint {
+  font-size: 0.8rem;
+  color: #94a3b8;
+  margin: 0;
+}
+
+.da-upload-preview {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 2px solid #e2e8f0;
+}
+.da-upload-preview img {
+  display: block;
+  width: 100%;
+  max-height: 200px;
+  object-fit: cover;
+}
+.da-upload-filename {
+  font-size: 0.78rem;
+  color: #64748b;
+  padding: 0.35rem 0.75rem;
+  margin: 0;
+  background: #f1f5f9;
+}
+.da-upload-clear {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(0,0,0,0.55);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  transition: background 0.2s;
+}
+.da-upload-clear:hover { background: #e53e3e; }
+
+/* ── Vehicle photo grid ── */
+.da-vehicle-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 0.6rem;
+  margin-bottom: 0.5rem;
+}
+.da-vehicle-thumb {
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 2px solid #e2e8f0;
+  aspect-ratio: 4/3;
+}
+.da-vehicle-thumb img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.da-vehicle-thumb .da-upload-clear {
+  top: 4px;
+  right: 4px;
+  width: 24px;
+  height: 24px;
+  font-size: 0.75rem;
+}
+
